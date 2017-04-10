@@ -1,0 +1,29 @@
+#
+# $Id$
+#
+datadir = @APP_DATADIR@
+pidfile = @APP_PIDFILE@
+logfile = @APP_LOGFILE@
+pwdfile = @APP_PWDFILE@
+
+db_driver = SQLite
+db_name = @APP_DBDIR@/@PACKAGE@.db
+#db_host = localhost
+#db_username = ziggi
+#db_password = 12345
+
+verbose = debug
+
+dbdir = @APP_DBDIR@
+
+ipv4listen = 127.0.0.1:5100
+ipv6listen = [::1]:5100
+
+tlscert = @APP_SYSCONFDIR@/@PACKAGE@.crt
+tlskey = @APP_SYSCONFDIR@/@PACKAGE@.key
+#tlsca = @APP_SYSCONFDIR@/ca.crt
+
+#user = @APP_USER@
+#group = @APP_GROUP@
+
+#EOF

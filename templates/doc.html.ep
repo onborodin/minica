@@ -1,0 +1,46 @@
+% layout 'default';
+% title 'MicroCA';
+
+<h3>Standarts</h3>
+<ul>
+    <li>
+        <a target="_blank" href="https://tools.ietf.org/html/rfc5280">RFC 5280</a>
+    </li>
+    <li>
+        <a target="_blank" href="http://www.itu.int/rec/T-REC-X.509-201210-S/en">ITU X.509</a>
+    </li>
+</ul>
+
+<h3>Drafts</h3>
+
+<!--
+<div id="microca-lifecicle1" class="large reveal" data-reveal>
+    <div class="row">&nbsp;</div>
+    <h5>Data flow from CA HTML form to certificate storage/database</h5>
+    <img class="thumbnail" src="/docs/microca-lifecicle1.svg">
+    <div class="row">&nbsp;</div>
+    <button id="message-button" class="button" data-close="microca-lifecicle1">Close</button>
+    <button class="close-button" data-close="microca-lifecicle1">&times;</button>
+</div>
+
+<div>
+<ul><li>Data flow from CA HTML form to certificate storage/database</li></ul>
+
+<a data-open="microca-lifecicle1">
+    <img class="thumbnail" src="/docs/microca-lifecicle1.svg">
+</a>
+<div>
+-->
+
+
+<ul><li>Data flow from CA HTML form to certificate storage/database</li></ul>
+    <img class="thumbnail" src="/docs/microca-lifecicle1.svg">
+<div>
+
+
+<div>
+<ul><li>Data flow flow database to exported certificate-key pair</li></ul>
+<img class="thumbnail" src="/docs/microca-lifecicle2.svg">
+<div>
+
+

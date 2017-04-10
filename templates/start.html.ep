@@ -1,0 +1,6 @@
+% layout 'default';
+% title 'MicroCA';
+
+<div class="text-center">
+<img class="thumbnail" src="/muppetshow2.jpg">
+</div>

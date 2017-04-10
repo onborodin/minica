@@ -1,0 +1,24 @@
+% if ($success) {
+
+<script>
+(function () {
+    var data = { "request" : "cert-show", 
+                 "id" : "<%= $id %>" 
+    };
+    $.post("/certs", data, function(data) {
+        $('#cert-show-reveal').html(data);
+    });
+    $('#cert-show-reveal').foundation('open');
+})();
+</script>
+
+% } else {
+
+    <div class="row">&nbsp;</div>
+%#    <div class="<%= $mLevel %>">
+        <div id="message-context"><%= $message %></div>
+%#    </div>
+    <div class="row">&nbsp;</div>
+    <button id="message-button" class="button" data-close>Close</button>
+    <button class="close-button" data-close>&times;</button>
+% }

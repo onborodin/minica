@@ -1,0 +1,256 @@
+% layout 'default';
+% title 'MicroCA';
+% use Encode qw(decode encode);
+
+% sub stripDN  {
+%     my $dn = shift;
+%     for my $n (split /\//, $dn) {
+%         my ($l, $r) = split /=/, $n;
+%         next unless $l;
+%         return $r if $l =~ /CN/;
+%     }
+% }
+
+<div id="message-window" class="middle reveal" data-reveal>
+    <div class="row">&nbsp;</div>
+    <div id="message-class">
+        <div id="message-context"><!-- empty --></div>
+    </div>
+    <div class="row">&nbsp;</div>
+    <button id="message-button" class="button" data-close="message-window">Close</button>
+    <button class="close-button" data-close="message-window">&times;</button>
+</div>
+
+
+<div id="cert-create-reveal" class="small reveal" data-reveal>
+    <form accept-charset="UTF-8" id="cert-create-form" action="" method="post" data-abide novalidate>
+
+        <h5>Create new key and certificate</h5>
+
+        <input type="hidden" name="request" value="cert-create" />
+
+        <label>Issuer
+            <select name="issuer_id" required>
+                <option value=""></option>
+% foreach my $cert (@{$self->app->ca->listCACert}) {
+                <option value="<%= $cert->{id} %>"><%= stripDN decode("utf-8", $cert->{subject}) %></option>
+% }
+                    <span class="form-error">Input password, please, 6 or more letters</span>
+
+            </select >
+        </label>
+        <label>Issuer private key password for signining, mandatory
+                <input type="password" name="issuer_password" placeholder="issuer password" required pattern="[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{5,24}"/>
+                    <span class="form-error">Input password, please, 6 or more letters</span>
+        </label>
+
+        <label>C, Country name, 2 letters, optional
+            <input type="text" name="country" placeholder="country" pattern="[a-zA-Z]{2,2}"/>
+            <span class="form-error">Fill the box, 2 letters</span>
+        </label>
+        <label>ST, State or province name, optional
+            <input type="text" name="state" placeholder="state" />
+        </label>
+        <label>L, Locality name, optional
+            <input type="text" name="locality" placeholder="locality" />
+        </label>
+        <label>O, Organization name, optional
+            <input type="text" name="org" placeholder="organisation" />
+        </label>
+        <label>OU, Organizational unit name, optional
+            <input type="text" name="org_unit" placeholder="organisation unit" />
+        </label>
+        <label><b>CN</b>, Common name, mandatory
+            <input type="text" name="common_name" placeholder="common name" required pattern="[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+"/>
+            <span class="form-error">CN is mandatory</span>
+        </label>
+
+        <label>Subject Alt DNS Names, comma separated, optional
+            <input type="text" name="subject_alt_dns_name" placeholder="www.some.org,www.bare.com" />
+        </label>
+
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                    <label>Private key size
+                        <select class="input-group-field" name="key_size">
+                            <option value="2048">2048</option>
+                            <option value="4096">4096</option>
+                        </select >
+                    </label>
+                    </td>
+                    <td>
+                        <label>Day of usage
+                        <input type="number" name="lifetime" placeholder="days" value="7300" />
+                        </label>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <label>Private key cypher type
+                            <select class="input-group-field" name="cipher_type">
+                                <option value="AES128">AES128</option>
+                                <option value="AES192">AES192</option>
+                                <option value="AES256">AES256</option>
+                                <option value="DES3">DES3</option>
+                                <option value="IDEA">IDEA</option>
+                                </select >
+                        </label>
+                    </td>
+                    <td>
+                    <label>Sign digests type
+                        <select class="input-group-field" name="digest_type">
+                            <option value="SHA224">SHA224</option>
+                            <option value="SHA256">SHA256</option>
+                            <option value="SHA384">SHA384</option>
+                            <option value="SHA512">SHA512</option>
+                        </select >
+                    </label>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <hr/>
+        <p class="text-center">
+            <button type="submit" class="success button">Accept</button>
+            <button type="button" class="button" data-close>Cancel</button>
+         </p>
+        <button type="button" class="close-button" data-close>&times;</button>
+    </form>
+</div>
+
+<script>
+$("#cert-create-reveal").draggable();
+</script>
+
+
+<script>
+$('#cert-create-form').foundation();
+
+$("#cert-create-form").on("submit", function(event) {
+    event.preventDefault();
+    return false;
+});
+$('#cert-create-form').on('formvalid.zf.abide', function(event) {
+    var data = $('#cert-create-form').serialize();
+    $('#cert-create-form')[0].reset();
+    $("#message-context").html('Data now will send, plase wait...');
+    $("#message-window").foundation('open');
+
+    $.post("/certs", data, function(data) {
+        $('#cert-create').prepend(data);
+    });
+});
+</script>
+
+
+
+<div id="cert-revoke-reveal" class="tiny reveal" data-reveal><!-- empty --></div>
+<div id="cert-unrevoke-reveal" class="tiny reveal" data-reveal><!-- empty --></div>
+<div id="cert-download-reveal" class="tiny reveal" data-reveal><!-- empty --></div>
+<div id="cert-delete-reveal" class="tiny reveal" data-reveal><!-- empty --></div>
+<div id="cert-show-reveal" class="large reveal" data-reveal><!-- empty --></div>
+
+<script>
+$("#cert-revoke-reveal").draggable();
+$("#cert-unrevoke-reveal").draggable();
+$("#cert-download-reveal").draggable();
+$("#cert-delete-reveal").draggable();
+%# $("#cert-show-reveal").draggable();
+</script>
+
+<div id="cert-create"><!-- empty --></div>
+<div id="top-hook"><!-- empty --></div>
+
+
+<div class="text-right">
+    <a class="button" data-open="cert-create-reveal">Create Cert</a>
+</div>
+
+<form accept-charset="UTF-8" id="issuer-select-form" action="" method="post">
+    <input type="hidden" name="request" value="cert-list" />
+    <div class="row column small-5 medium-5">
+        <div class="input-group">
+            <span class="input-group-label">Issuer</span>
+            <select name="issuer_id" class="input-group-field">
+                <option value="">All issuers</option>
+% foreach my $cert (@{$self->app->ca->listCACert}) {
+                <option value="<%= $cert->{id} %>"><%= stripDN decode("utf-8", $cert->{subject}) %></option>
+% }
+            </select >
+            <div class="input-group-button">
+                <input type="submit" class="button" value="submit">
+            </div>
+        </div>
+    </div>
+</form>
+
+<hr/>
+
+<div id="message-text"></div>
+
+<div id="cert-table"><!-- table container -->
+  <table id="table" class="display" >
+    <thead>
+      <tr>
+        <td>Serial</td>
+        <td>Since</td>
+        <td>Issuer CN</td>
+        <td>Subject CN</td>
+        <td>Expires</td>
+        <td>Revoked</td>
+        <td>Operation</td>
+      </tr>
+    </thead>
+  </table>
+</div> 
+
+
+
+
+<script>
+$("#issuer-select-form").on("submit", function(event) {
+    $("#message-window").foundation();
+    $("#message-window").foundation('open');
+
+    var message = '<p>Dowload data in progress. Please wait...</p>';
+    message += '<div id="cert-download-bar" class="progress" role="progressbar" tabindex="0">';
+    message += '<div id="cert-download-meter" class="progress-meter" style="width: 0%"></div>';
+    message += '</div>';
+    $("#message-context").html(message);
+    $("#cert-download-bar").foundation();
+    var progress = 0;
+    var timerId = setInterval(function() {
+        progress += 10;
+        if (progress > 90) progress = 0;
+        $("#cert-download-meter").css({ width : progress + '%' });
+    }, 200);
+
+    setTimeout(function() {
+        clearInterval(timerId);
+    }, 20000);
+
+    var data = $('#issuer-select-form').serialize();
+    $.post("/certs", data, function(data) {
+        $('#cert-table').html(data);
+        $("#message-window").foundation('close');
+        clearInterval(timerId);
+    });
+    return false;
+});
+
+$('#table').DataTable({
+        "lengthMenu": [[10, 25, 50, 100, 500 -1], [10, 25, 50, 100, 500, "All"]]
+});
+
+</script>
+
+<!-- end of content -->
+
+
+

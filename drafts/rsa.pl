@@ -1,0 +1,45 @@
+#!/usr/local/bin/perl
+
+use Crypt::OpenSSL::Random;
+use Crypt::OpenSSL::RSA;
+use Crypt::OpenSSL::CA;
+use Crypt::OpenSSL::X509;
+
+
+my $key = <<EOF;
+-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEAuW5hjyGaBo5VxABLUrJLxZYRUB061dtImtl+9UbJxNN2/5+P
+dd98fIIMx5VR9tn1KQ6MB3J0cXTcYHlq4FhbAkJmwnV6xEqkE9Z11/C5vRAc1o1w
+/I0mQDbROjZBQnZQndRwy9nLbMY5+3+M86XzCoHMdqe2TyA4BOl+d1yWX5OCrjH2
+oG75ZHYEAANh2M/MH4pZujTDHD5U0HNVGGb9GQyGem61zu+Mkb6X87f5euOsVSK5
+YVtIV4H67xtR8LuJCNvzU9kEcPSu55qN0LRIUbOM/vqFi7dmfcOijg13+KO2f5YT
+k03S0uOHRr97brJszXkWXGneSGAP2AocVMjleQIDAQABAoIBAQCzI3jqfsq/RKiE
+lsgt1wOumaCWJfbd/V9yAWZObJmmJaiToUFF3ab03eqcsZuif8QBawVKeH8X0I7K
+QOJIY/NgBmghur7kfTtv0sK739qAVN2XRMN/qJjodkzBEQMQwx50q3Rg60JEDmib
+mAjCpXJblzPA+Zr9bCHSVQSRKYg4QbHAAimVG8wxQCD55aUeDrmNabS7V4RvVtNZ
+571nWkpreH7nqodosi5JBffbktgU21Y3nr94Cs7XJl/Az4ZPi5P2+Tj8+fEMnkwx
+zrEkwkaXbG8kSEezBE1vMumnhUjmg4puRr0TGPcbFb+x9HREI5m39gwApAvFSzve
+8baBX3zlAoGBAO7ah8cVk+TklB3Uo//2m0b+dMHqUtVJ06yeXPG83SWVHkZa7Mre
+XME0NCPzCwdHLgH/9UqfZLoDvr/WBNX5Ds4E+HUI2DT3rG5rqjHQdsPOvNx49dgM
+VgliaD1CehTi778fxOVHXVFAGwkQ6Tey3zWDG+hn1UofUolWwJwPmvQzAoGBAMa+
+F/UqrH6ryM4IxEHTHaXolsA4vC04EyesUbUnvmH8mSnjQ1iD2yWqeDfGIeDxIRcX
+pSU0eJ7fe0dkq4gdE5//vUZ1+xSxzr+VhJc7Hl+4zCJtZXLVrb3kS+0cg8o5h6Fv
+wGELymyvWKtmjBh1cz4JYiYlEZU8Cmc6hGEYYfOjAoGBALLi0gvlejVUiCXrSsR6
+MoMyMcnFsDHzr+e5V0zpMQtjqh/xGyU48mj0qxQ9g4X45lkzFMfFps+13Fead1a1
+yEO970Lf0+WflPHCCt5yDXDK1iGdKiqb2pf+rqkqr3oTGJGgvnslPpuKknTwyGoh
+uhA+2Fjv4ws3eD5JzclT2q6HAoGAHRv0qF0ivL7uf3b7P+TrH8TMZ8Unkrv22kW8
+BfuXQATebisyTwGpFIA+cXTcu3S18wrsjmF8FVEIXnGZSitwF2w+zdYz+1j7vkXp
+ELmA/mYzyAsb49D2TKzmjgkyKGl6uyOCGvS+JmMcaqZveJmjUn/PV2TwiVos7+e7
+QflvR18CgYAwhlH2asDotUKRTheMzN8QOMyMf6KeNy/MLN9VEEfLx3jd+yyUeKFF
+7nTuQnNGn4rDFulEQsZDHA6aBL23PxhYsArrqAi16+9n80unDvjpKKiKzL4GCGeh
+OH5vdECe7YvJYkoyWvkscQlt8ohtK87jAkZGC28k31ahWTkJRmMdKA==
+-----END RSA PRIVATE KEY-----
+EOF
+
+$password = '12345';
+
+$rsa = Crypt::OpenSSL::RSA->new_private_key($key, $password); 
+
+print $rsa->get_private_key_string;
+
+#EOF

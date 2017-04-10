@@ -1,0 +1,43 @@
+
+@import 'util/util';
+@import 'settings/settings';
+
+@import 'global';
+
+
+.log-in-form {
+  border: 1px solid $medium-gray;
+  padding: 1rem;
+  border-radius: $global-radius; 
+}
+
+.no-frame {
+    padding: 0.4rem !important;
+    margin: 0.1rem !important;
+    border-style: none !important;
+}
+
+@mixin text-pallette ($type){
+  color: map-get($foundation-palette, $type) !important;
+}
+
+
+  .text.alert {
+    @include text-pallette(alert);
+  }
+
+  .text.warning {
+    @include text-pallette(warning);
+  }
+
+  .text.secondary {
+    @include text-pallette(secondary);
+  }
+
+  .text.success {
+    @include text-pallette(success);
+  }
+
+  .text.primary {
+    @include text-pallette(primary);
+  }

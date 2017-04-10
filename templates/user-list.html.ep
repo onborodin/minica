@@ -1,0 +1,159 @@
+<!-- begin of content -->
+% layout 'default';
+% title 'MicroCA';
+% use Mojo::Util qw(md5_sum);
+% use Encode qw(encode decode);
+
+<div id="message-window" class="middle reveal" data-reveal>
+    <div class="row">&nbsp;</div>
+    <div id="message-class">
+        <div id="message-context"><!-- empty --></div>
+    </div>
+    <div class="row">&nbsp;</div>
+    <button id="message-button" class="button" data-close>Close</button>
+    <button class="close-button" data-close>&times;</button>
+</div>
+
+<div id="top-hook"><!-- empty --></div>
+
+<div id="user-create-reveal" class="reveal" data-reveal>
+    <form accept-charset="UTF-8" id="user-create-form" action="/users" method="post" data-abide novalidate>
+        <h5>Add new account</h5>
+<!--
+        <div data-abide-error class="alert callout" style="display: none;">
+            <p><i class="fi-alert"></i>There are some errors in your form.</p>
+        </div>
+-->
+        <input type="hidden" name="request" value="user-create" />
+        <label>Login
+            <input type="text" name="username" placeholder="login" required pattern="[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{5,42}"/>
+            <span class="form-error">Login name is mandatory, 5 or more letter</span>
+        </label>
+        <label>Name
+            <input type="text" name="name" placeholder="real name" required pattern="[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{4,64}"/>
+            <span class="form-error">Real name is mandatory, 4 or more letter</span>
+        </label>
+        <label>Password
+            <input type="text" name="password" placeholder="password" required pattern="[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{5,42}"/>
+            <span class="form-error">Password is mandatory, 5 or more letter</span>
+        </label>
+        <label>Master password
+            <input type="password" name="masterpwd" placeholder="master password" required pattern="[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{2,42}"/>
+            <span class="form-error">Please, input master password for the operation</span>
+        </label>
+
+        <p class="text-center">
+            <button type="submit" class="success button">Accept</button>
+            <button type="button" class="button" data-close>Cancel</button>
+        </p>
+        <button type="button" class="close-button" data-close>&times;</button>
+    </form>
+</div>
+
+<p class="text-right">
+    <a class="button" data-open="user-create-reveal">Add User</a>
+</p>
+
+<script>
+$('#user-create-form').foundation();
+
+$("#user-create-form").on("submit", function(event) {
+    event.preventDefault();
+});
+
+$('#user-create-form').on('formvalid.zf.abide', function(event) {
+    var data = $('#user-create-form').serialize();
+    $.post("/users", data, function(data) {
+        $('#top-hook').html(data);
+    });
+    $('#user-create-form')[0].reset();
+});
+</script>
+
+
+<div id="user-delete-reveal" class="tiny reveal" data-reveal><!-- empty --></div>
+<div id="user-chpwd-reveal" class="tiny reveal" data-reveal><!-- empty --></div>
+<div id="user-chname-reveal" class="tiny reveal" data-reveal><!-- empty --></div>
+
+
+
+    <table id="table">
+        <thead>
+            <tr>
+                <td>Login</td>
+                <td>Name</td>
+                <td>Operation</td>
+            </tr>
+        </thead>
+        <tbody id="tbody">
+
+% my @users = $self->app->users->list;
+% foreach my $username (@users) {
+%   my $name = $self->app->users->info($username);
+%   my $rowid = md5_sum $username;
+
+        <tr id="<%= $rowid %>">
+            <td><%= $username %></td>
+            <td><%= $name %></a></td>
+            <td>
+                <a id="button-chname-<%= $rowid %>" class="no-frame hollow button">N</a>
+                <a id="button-chpwd-<%= $rowid %>" class="no-frame hollow button">P</a>
+                <a id="button-delete-<%= $rowid %>" class="no-frame hollow button">&times;</a>
+            </td>
+
+<script>
+$("#button-chname-<%= $rowid %>").click(function() {
+    var request = 'user-chname-form';
+    var username = '<%= $username %>';
+    var rowid = '<%= $rowid %>';
+    $.post('/users', { "request" : request,
+                      "rowid" : rowid,
+                      "username" : username 
+                    }, function(data) {
+        $('#user-chname-reveal').html(data);
+        $('#user-chname-reveal').foundation('open');
+    });
+});
+
+$("#button-chpwd-<%= $rowid %>").click(function() {
+    var request = 'user-chpwd-form';
+    var username = '<%= $username %>';
+    var rowid = '<%= $rowid %>';
+    $.post('/users', { "request":request,
+                      "rowid": rowid,
+                      "username":username 
+                    }, function(data) {
+        $('#user-chpwd-reveal').html(data);
+        $('#user-chpwd-reveal').foundation('open');
+    });
+});
+
+$("#button-delete-<%= $rowid %>").click(function() {
+    var request = 'user-delete-form';
+    var username = '<%= $username %>';
+    var rowid = '<%= $rowid %>';
+    $.post('/users', { "request" : request,
+                      "rowid" : rowid,
+                      "username" : username 
+                    }, function(data) {
+        $('#user-delete-reveal').html(data);
+        $('#user-delete-reveal').foundation('open');
+    });
+});
+</script>
+
+        </tr>
+% }
+        </tbody>
+    </table>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#table').DataTable();
+} );
+
+</script>
+
+<div id="bottom-hook"></div> 
+
+<!-- end of content -->

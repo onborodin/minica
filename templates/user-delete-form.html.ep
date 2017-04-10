@@ -1,0 +1,51 @@
+% if ($success) {
+
+<form accept-charset="UTF-8" id="user-delete-form" action="/users" method="post" data-abide novalidate>
+    <div class="row">&nbsp;</div>
+
+    <p class="lead text-center">You want delete user account <%= $username %>. Are you sure?</p>
+
+    <input type="hidden" name="request" value="user-delete" />
+    <input type="hidden" name="username" value="<%= $username %>" />
+    <input type="hidden" name="rowid" value="<%= $rowid %>" />
+
+    <label>Master password
+        <input type="password" name="masterpwd" placeholder="master password" required pattern="[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{2,42}"/>
+        <span class="form-error">Please, input master password for the operation</span>
+    </label>
+
+    <div class="row">&nbsp;</div>
+    <p class="text-center">
+        <button type="submit" class="success button">Accept</button>
+        <button type="button" class="button" data-close >Cancel</button>
+    </p>
+    <button type="button" class="close-button" data-close>&times;</button>
+</form>
+
+<script>
+$('#user-delete-form').foundation();
+
+$("#user-delete-form").on("submit", function(event) {
+    event.preventDefault();
+});
+
+$('#user-delete-form').on('formvalid.zf.abide', function(event) {
+    var data = $('#user-delete-form').serialize();
+    $.post("/users", data, function(data) {
+        $('#top-hook').html(data);
+    });
+    $('#user-delete-form')[0].reset();
+});
+</script>
+
+% } else {
+
+    <div class="row">&nbsp;</div>
+%#    <div class="<%= $mLevel %>">
+        <div id="message-context"><%= $message %></div>
+%#    </div>
+    <div class="row">&nbsp;</div>
+    <button id="message-button" class="button" data-close>Close</button>
+    <button class="close-button" data-close>&times;</button>
+
+% }

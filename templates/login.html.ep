@@ -1,0 +1,34 @@
+% layout 'login';
+% title 'MicroCA Login';
+
+<!- begin login form -->
+    <div class="row">&nbsp;</div>
+    <div class="row">
+        <div class="small-4 columns">&nbsp;</div>
+        <div class="small-4 columns">
+            <div class="row log-in-form">
+                <div class="float-centered columns">
+
+                    <form accept-charset="UTF-8" method="post" action="/login">
+                        <input type="hidden" name="request" value="login"/>
+                        <div class="row column">
+                            <h4 class="text-center">Login with your username</h4>
+                            <label>Username
+                                <input type="text" name="username" placeholder="somebody@example.com" />
+                            </label>
+                            <label>Password
+                                <input type="password" name="password" placeholder="Password" />
+                            </label>
+                            <p>
+                                <button type="submit" class="button expanded">Log In</button>
+                            </p>
+                            <p class="text-center"><%= $message %></p>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+        <div class="small-4 columns">&nbsp;</div>
+    </div>
+<!- end login form -->

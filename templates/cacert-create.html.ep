@@ -1,0 +1,117 @@
+% use Mojo::Util qw(md5_sum);
+% use Encode qw(decode encode);
+
+% sub _stripDN  {
+%     my $dn = shift;
+%     for my $n (split /\//, $dn) {
+%         my ($l, $r) = split /=/, $n;
+%         next unless $l;
+%         return $r if ($l =~ /CN/);
+%     }
+% }
+% sub _stripDate {
+%   my $a = substr shift, 0, 10;
+%   $a =~ s/\//-/g;
+%   return $a;
+% }
+
+% my $rowid;
+% my $certData;
+% if ($success) {
+%   #--- create rowid ---
+%   $rowid = md5_sum $id;
+%   $certData = @{$self->app->ca->listCACert($id)}[0];
+% }
+
+<script>
+
+% if ($success) {
+
+    (function() {
+        var c1 = '<span class="text alert"><%= _stripDate $certData->{begindate} %></span>';
+        var c2 = '<span class="text alert"><%= _stripDN decode('utf-8', $certData->{subject}) %></span>';
+        var c3 = '<span class="text alert"><%= _stripDate $certData->{expiredate} %></span>';
+        var c4 = '';
+        var c5 = '<a id="button-show-<%= $rowid %>" class="no-frame hollow button">S</a>';
+        c5 += '<a id="button-revoke-<%= $rowid %>" class="no-frame hollow button">R</a>';
+        c5 += ' <a id="button-download-<%= $rowid %>" class="no-frame hollow button">&#9660;</a>';
+        c5 += ' <a id="button-delete-<%= $rowid %>" class="no-frame hollow button">&times;</a>';
+
+        var rowid = '<%= $rowid %>';
+        var rowIndex = $('#table').dataTable().fnAddData([ c1, c2, c3, c4, c5 ]);
+        var row = $('#table').dataTable().fnGetNodes(rowIndex);
+        $(row).attr('id', rowid);
+        console.log('cacert-create.html.ep: point 01');
+
+    })();
+
+    $("#subject-<%= $rowid %>").click(function() {
+        var request = 'cacert-show-form';
+        var id = '<%= $id %>';
+        var rowid = '<%= $rowid %>';
+        $.post('/cacerts', { "request" : request,
+                          "rowid" : rowid,
+                          "id" : id 
+                        }, function(data) {
+            $('#top-hook').html(data);
+        });
+    });
+
+
+    $("#button-show-<%= $rowid %>").click(function() {
+        var request = 'cacert-show-form';
+        var id = '<%= $id %>';
+        var rowid = '<%= $rowid %>';
+        $.post('/cacerts', { "request" : request,
+                          "rowid" : rowid,
+                          "id" : id 
+                        }, function(data) {
+            $('#top-hook').html(data);
+        });
+    });
+
+
+    $("#button-revoke-<%= $rowid %>").click(function() {
+        var request = 'cacert-revoke-form';
+        var id = '<%= $id %>';
+        var rowid = '<%= $rowid %>';
+        $.post('/cacerts', { "request" : request,
+                          "rowid" : rowid,
+                          "id" : id 
+                        }, function(data) {
+            $('#cacert-revoke-reveal').html(data);
+            $('#cacert-revoke-reveal').foundation('open');
+        });
+    });
+
+    $("#button-download-<%= $rowid %>").click(function() {
+        var request = 'cacert-download-form';
+        var id = '<%= $id %>';
+        var rowid = '<%= $rowid %>';
+        $.post('/cacerts', { "request" : request,
+                          "rowid" : rowid,
+                          "id" : id 
+                        }, function(data) {
+            $('#cacert-download-reveal').html(data);
+            $('#cacert-download-reveal').foundation('open');
+        });
+    });
+
+    $("#button-delete-<%= $rowid %>").click(function() {
+        var request = 'cacert-delete-form';
+        var id = '<%= $id %>';
+        var rowid = '<%= $rowid %>';
+        $.post('/cacerts', { "request" : request,
+                          "rowid" : rowid,
+                          "id" : id 
+                        }, function(data) {
+            $('#cacert-delete-reveal').html(data);
+            $('#cacert-delete-reveal').foundation('open');
+        });
+    });
+
+% }
+
+    $("#message-context").html('<%= $message  %>');
+    $("#message-window").foundation('open');
+</script>

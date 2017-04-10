@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="x-ua-compatible" content="ie=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" type="text/css" href="/css/foundation.css" />
+        <script src="/js/jquery.min.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="/css/dataTables.foundation.min.css"/>
+        <link rel="stylesheet" type="text/css" href="/css/autoFill.foundation.min.css"/>
+%#        <link rel="stylesheet" type="text/css" href="/css/colReorder.foundation.min.css"/>
+%#        <link rel="stylesheet" type="text/css" href="/css/fixedHeader.foundation.min.css"/>
+        <link rel="stylesheet" type="text/css" href="/css/app.css"/>
+
+        <script type="text/javascript" src="/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="/js/dataTables.foundation.min.js"></script>
+        <script type="text/javascript" src="/js/dataTables.autoFill.min.js"></script>
+        <script type="text/javascript" src="/js/autoFill.foundation.min.js"></script>
+%#        <script type="text/javascript" src="/js/dataTables.colReorder.min.js"></script>
+%#        <script type="text/javascript" src="/js/dataTables.fixedHeader.min.js"></script>
+
+%#        <link rel="stylesheet" type="text/css" href="/jquery-ui/jquery-ui.min.css"/>
+%#        <link rel="stylesheet" type="text/css" href="/jquery-ui/jquery-ui.structure.min.css"/>
+%#        <link rel="stylesheet" type="text/css" href="/jquery-ui/jquery-ui.theme.min.css"/>
+
+        <script type="text/javascript" src="/jquery-ui/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="/js/foundation.js"></script>
+
+        <title>
+            <%= title %>
+        </title>
+  </head>
+  <body>
+    <div class="row">&nbsp;</div>
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <ul class="dropdown menu" data-dropdown-menu>
+                <li class="menu-text">MicroCA</li>
+                </li>
+                <li><a href="/docs">Docs</a></li>
+                <li><a href="/users">Users</a></li>
+                <li><a href="/cacerts">CA certs</a></li>
+                <li><a href="/certs">Certs</a></li>
+                <li><a href="/crls">CRLs</a></li>
+
+            </ul>
+        </div>
+        <div class="top-bar-right">
+            <form method="post" action="/logout">
+                <ul class="menu">
+                    <input type="hidden" name="request" value="logout"/>
+                    <li><button type="submit" class="button no-frame hollow">X</button></li>
+                </ul>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-1 columns">&nbsp;</div>
+        <div class="small-10 medium-10 columns">
+            <div class="expanded row">&nbsp;</div>
+<!- end of head template ->
+
+<%= content %>
+
+<!- begin of tail template ->
+
+            <div class="row">&nbsp;</div>
+      </div>
+      <div class="small-1 columns">&nbsp;</div>
+    </div>
+
+    <div class="row">
+      <div class="medium-1 columns">&nbsp;</div>
+      <div class="medium-10 columns"><hr><br/>
+        <p class="text-center">Made by <a href="mailto:borodin@unix7.pro">Borodin Oleg</a></p>
+      </div>
+      <div class="medium-1 columns">&nbsp;</div>
+    </div>
+    <script type="text/javascript" src="/js/app.js"></script>
+
+  </body>
+</html>
+<!-- EOF -->

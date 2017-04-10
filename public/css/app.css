@@ -1,0 +1,24 @@
+.log-in-form {
+  border: 1px solid #cacaca;
+  padding: 1rem;
+  border-radius: 3px; }
+
+.no-frame {
+  padding: 0.4rem !important;
+  margin: 0.1rem !important;
+  border-style: none !important; }
+
+.text.alert {
+  color: #ec5840 !important; }
+
+.text.warning {
+  color: #ffae00 !important; }
+
+.text.secondary {
+  color: #777 !important; }
+
+.text.success {
+  color: #3adb76 !important; }
+
+.text.primary {
+  color: #2199e8 !important; }

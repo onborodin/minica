@@ -1,0 +1,65 @@
+% use Mojo::Util qw(md5_sum);
+% my $name = $self->app->users->info($username);
+
+%#--- create rowid ---
+% my $rowid = md5_sum $username;
+
+<script>
+% if ($success) {
+    var c1 = '<span class="text alert"><%= $username %></span>';
+    var c2 = '<span class="text alert"><%= $name %></span>';
+    var c3 = '<a id="button-chname-<%= $rowid %>" class="no-frame hollow button">N</a>';
+    c3 += ' <a id="button-chpwd-<%= $rowid %>" class="no-frame hollow button">P</a>';
+    c3 += ' <a id="button-delete-<%= $rowid %>" class="no-frame hollow button">&times;</a>';
+//    $('#table').DataTable().row.add([ c1, c2, c3 ]).draw();
+
+    var rowid = '<%= $rowid %>';
+    var rowIndex = $('#table').dataTable().fnAddData([ c1, c2, c3 ]);
+    var row = $('#table').dataTable().fnGetNodes(rowIndex);
+    $(row).attr('id', rowid);
+
+    $("#button-chname-<%= $rowid %>").click(function() {
+        var request = 'user-chname-form';
+        var username = '<%= $username %>';
+        var rowid = '<%= $rowid %>';
+        $.post('/users', { "request" : request,
+                      "rowid" : rowid,
+                      "username" : username 
+                    }, function(data) {
+            $('#user-chname-reveal').html(data);
+            $('#user-chname-reveal').foundation('open');
+        });
+    });
+
+    $("#button-chpwd-<%= $rowid %>").click(function() {
+        var request = 'user-chpwd-form';
+        var username = '<%= $username %>';
+        var rowid = '<%= $rowid %>';
+        $.post('/users', { "request":request,
+                      "rowid": rowid,
+                      "username":username 
+                    }, function(data) {
+            $('#user-chpwd-reveal').html(data);
+            $('#user-chpwd-reveal').foundation('open');
+        });
+    });
+
+    $("#button-delete-<%= $rowid %>").click(function() {
+        var request = 'user-delete-form';
+        var username = '<%= $username %>';
+        var rowid = '<%= $rowid %>';
+        $.post('/users', { "request" : request,
+                      "rowid" : rowid,
+                      "username" : username 
+                    }, function(data) {
+            $('#user-delete-reveal').html(data);
+            $('#user-delete-reveal').foundation('open');
+        });
+    });
+
+% }
+
+    $("#message-context").html('<%= $message %>');
+    $("#message-window").foundation('open');
+</script>
+

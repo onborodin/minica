@@ -1,0 +1,49 @@
+% if ($success) {
+<form accept-charset="UTF-8" id="crl-delete-form" action="/crls" method="post" data-abide novalidate>
+    <div class="row">&nbsp;</div>
+
+    <p class="lead text-center">You want delete the CRL. Are you sure?</p>
+
+    <input type="hidden" name="request" value="crl-delete" />
+    <input type="hidden" name="id" value="<%= $id %>" />
+    <input type="hidden" name="rowid" value="<%= $rowid %>" />
+
+    <label>Issuer private key password
+        <input type="password" name="password" placeholder="issuer key password" required pattern="[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{2,42}"/>
+        <span class="form-error">Please, input password for the operation</span>
+    </label>
+
+    <div class="row">&nbsp;</div>
+    <p class="text-center">
+        <button type="submit" class="success button">Accept</button>
+        <button type="button" class="button" data-close="crl-delete-reveal">Cancel</button>
+    </p>
+    <button type="button" class="close-button" data-close="crl-delete-reveal">&times;</button>
+</form>
+
+<script>
+$('#crl-delete-form').foundation();
+
+$("#crl-delete-form").on("submit", function(event) {
+    event.preventDefault();
+});
+
+$('#crl-delete-form').on('formvalid.zf.abide', function(event) {
+    var data = $('#crl-delete-form').serialize();
+    $.post("/crls", data, function(data) {
+        $('#top-hook').html(data);
+    });
+    $('#crl-delete-form')[0].reset();
+});
+</script>
+% } else {
+
+    <div class="row">&nbsp;</div>
+%#    <div class="<%= $mLevel %>">
+        <div id="message-context"><%= $message %></div>
+%#    </div>
+    <div class="row">&nbsp;</div>
+    <button id="message-button" class="button" data-close>Close</button>
+    <button class="close-button" data-close>&times;</button>
+
+% }
