@@ -2701,7 +2701,7 @@ $as_echo "ok" >&6; };
 fi
 done
 
-ac_config_files="$ac_config_files minica.conf.sample"
+ac_config_files="$ac_config_files minica.conf.example"
 
 
 ac_config_files="$ac_config_files Makefile minica rc.d/minica lib/MiniCA.pm minica-cacert-import minica-cert-import"
@@ -3439,7 +3439,7 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
-    "minica.conf.sample") CONFIG_FILES="$CONFIG_FILES minica.conf.sample" ;;
+    "minica.conf.example") CONFIG_FILES="$CONFIG_FILES minica.conf.example" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "minica") CONFIG_FILES="$CONFIG_FILES minica" ;;
     "rc.d/minica") CONFIG_FILES="$CONFIG_FILES rc.d/minica" ;;
