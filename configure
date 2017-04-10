@@ -581,7 +581,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 PACKAGE_URL=
 
-ac_unique_file="microca.pl.in"
+ac_unique_file="minica.in"
 ac_default_prefix=/usr/local
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
@@ -1300,7 +1300,7 @@ if test -n "$ac_init_help"; then
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-app-conf=PATH    set configuration file for microca to PATH (default:
+  --with-app-conf=PATH    set configuration file for minica to PATH (default:
                           "${ac_default_prefix}"/etc/${PACKAGE}/${PACKAGE}.conf)
   --with-logfile=PATH     set file path for source logfile (default:
                           /var/log/${PACKAGE}/${PACKAGE}.log)
@@ -1308,8 +1308,8 @@ Optional Packages:
                           /var/run/${PACKAGE}/${PACKAGE}.pid)
   --with-dbdir=PATH       set file path for data files (default:
                           "/var/db/${PACKAGE}")
-  --with-user=microca     set executing user name
-  --with-group=microca    set executing group name
+  --with-user=minica      set executing user name
+  --with-group=minica     set executing group name
 
 Report bugs to the package provider.
 _ACEOF
@@ -2215,8 +2215,8 @@ fi
 
 # Define the identity of the package.
 
- PACKAGE=microca
- VERSION=0.01
+ PACKAGE=minica
+ VERSION=0.02
 
 
 cat >>confdefs.h <<_ACEOF
@@ -2264,7 +2264,7 @@ am__tar='$${TAR-tar} chof - "$$tardir"' am__untar='$${TAR-tar} xf -'
 
 
 
-PACKAGE=microca
+PACKAGE=minica
 
 # Extract the first word of "perl", so it can be a program name with args.
 set dummy perl; ac_word=$2
@@ -2474,7 +2474,7 @@ esac
 
 # Check whether --with-app-conf was given.
 if test "${with_app_conf+set}" = set; then :
-  withval=$with_app_conf;  if test ! -z "$with_microca_conf" ; then
+  withval=$with_app_conf;  if test ! -z "$with_minica_conf" ; then
 		case $with_app_conf in
 			/*)
 				APP_SYSCONF="$with_app_conf"
@@ -2616,10 +2616,10 @@ if test "${with_user+set}" = set; then :
 				;;
 		esac
 	else
-		APP_USER="microca"
+		APP_USER="minica"
 	fi
 else
-   APP_USER="microca"
+   APP_USER="minica"
 fi
 
 
@@ -2643,10 +2643,10 @@ if test "${with_group+set}" = set; then :
 				;;
 		esac
 	else
-		APP_GROUP="microca"
+		APP_GROUP="minica"
 	fi
 else
-   APP_GROUP="microca"
+   APP_GROUP="minica"
 fi
 
 
@@ -2701,10 +2701,10 @@ $as_echo "ok" >&6; };
 fi
 done
 
-ac_config_files="$ac_config_files microca.conf"
+ac_config_files="$ac_config_files minica.conf.sample"
 
 
-ac_config_files="$ac_config_files Makefile microca.pl rc.d/microca lib/MicroCA.pm microca-cacert-import.pl microca-cert-import.pl"
+ac_config_files="$ac_config_files Makefile minica rc.d/minica lib/MiniCA.pm minica-cacert-import minica-cert-import"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -3439,13 +3439,13 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
-    "microca.conf") CONFIG_FILES="$CONFIG_FILES microca.conf" ;;
+    "minica.conf.sample") CONFIG_FILES="$CONFIG_FILES minica.conf.sample" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "microca.pl") CONFIG_FILES="$CONFIG_FILES microca.pl" ;;
-    "rc.d/microca") CONFIG_FILES="$CONFIG_FILES rc.d/microca" ;;
-    "lib/MicroCA.pm") CONFIG_FILES="$CONFIG_FILES lib/MicroCA.pm" ;;
-    "microca-cacert-import.pl") CONFIG_FILES="$CONFIG_FILES microca-cacert-import.pl" ;;
-    "microca-cert-import.pl") CONFIG_FILES="$CONFIG_FILES microca-cert-import.pl" ;;
+    "minica") CONFIG_FILES="$CONFIG_FILES minica" ;;
+    "rc.d/minica") CONFIG_FILES="$CONFIG_FILES rc.d/minica" ;;
+    "lib/MiniCA.pm") CONFIG_FILES="$CONFIG_FILES lib/MiniCA.pm" ;;
+    "minica-cacert-import") CONFIG_FILES="$CONFIG_FILES minica-cacert-import" ;;
+    "minica-cert-import") CONFIG_FILES="$CONFIG_FILES minica-cert-import" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

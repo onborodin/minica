@@ -1,5 +1,5 @@
-AC_INIT(minica.pl.in)
-AM_INIT_AUTOMAKE(minica,0.01)
+AC_INIT(minica.in)
+AM_INIT_AUTOMAKE(minica,0.02)
 AC_PREFIX_DEFAULT(/usr/local)
 
 PACKAGE=minica
@@ -200,9 +200,9 @@ Encode
 MIME::QuotedPrint
 ])
 
-AC_CONFIG_FILES([minica.conf])
+AC_CONFIG_FILES([minica.conf.sample])
 
-AC_OUTPUT([Makefile minica.pl rc.d/minica lib/MiniCA.pm minica-cacert-import.pl minica-cert-import.pl])
+AC_OUTPUT([Makefile minica rc.d/minica lib/MiniCA.pm minica-cacert-import minica-cert-import])
 dnl EOF
 
 

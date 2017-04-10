@@ -12,17 +12,17 @@ confdir = @APP_SYSCONFDIR@
 nobase_conf_DATA = minica.conf.sample
 
 
-minica.db.sample: minica.db
-	cp minica.db minica.db.sample
+#minica.db.sample: minica.db
+#	cp minica.db minica.db.sample
 
-minica.pw.sample: minica.pw
-	cp minica.pw minica.pw.sample
+#minica.pw.sample: minica.pw
+#	cp minica.pw minica.pw.sample
 
-minica.sql.sample: minica.sql
-	cp minica.sql minica.sql.sample
+#minica.sql.sample: minica.sql
+#	cp minica.sql minica.sql.sample
 
-minica.conf.sample: minica.conf
-	cp minica.conf minica.conf.sample
+#minica.conf.sample: minica.conf
+#	cp minica.conf minica.conf.sample
 
 etcdir = /usr/local/etc
 
@@ -32,11 +32,10 @@ endif
 
 EXTRA_DIST = \
 	LICENSE \
-	minica.pw \
-	minica.db \
+	minica.pw.sample \
+	minica.db.sample \
 	minica.sql \
 	minica.8
-
 
 nobase_dist_pkgdata_DATA = \
 	public/favicon.png \
@@ -181,21 +180,21 @@ man_MANS = minica.8
 minica.8: minica
 	pod2man minica > minica.8
 
-minica: minica.pl
-	cp minica.pl minica
-	chmod a+x minica
+#minica: minica.pl
+#	cp minica.pl minica
+#	chmod a+x minica
 
-minica.db: minica.sql
-	sqlite3 minica.db < minica.sql
-	chmod go-rw minica
+#minica.db: minica.sql
+#	sqlite3 minica.db < minica.sql
+#	chmod go-rw minica
 
-minica-cert-import: minica-cert-import.pl
-	cp minica-cert-import.pl minica-cert-import
-	chmod a+x minica-cert-import
+#minica-cert-import: minica-cert-import.pl
+#	cp minica-cert-import.pl minica-cert-import
+#	chmod a+x minica-cert-import
 
-minica-cacert-import: minica-cacert-import.pl
-	cp minica-cacert-import.pl minica-cacert-import
-	chmod a+x minica-cacert-import
+#minica-cacert-import: minica-cacert-import.pl
+#	cp minica-cacert-import.pl minica-cacert-import
+#	chmod a+x minica-cacert-import
 
 clean:
 	rm -f minica *~ */*~ */*/*~ */*/*/*~
