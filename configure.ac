@@ -1,8 +1,8 @@
-AC_INIT(microca.pl.in)
-AM_INIT_AUTOMAKE(microca,0.01)
+AC_INIT(minica.pl.in)
+AM_INIT_AUTOMAKE(minica,0.01)
 AC_PREFIX_DEFAULT(/usr/local)
 
-PACKAGE=microca
+PACKAGE=minica
 
 AC_CHECK_PROG(HAVE_PERL, perl, true, false, /usr/local/bin /usr/bin)
 if test "x$HAVE_PERL" = "xfalse"; then
@@ -33,8 +33,8 @@ esac
 
 
 AC_ARG_WITH(app-conf,
-	AS_HELP_STRING([--with-app-conf=PATH],[set configuration file for microca to PATH (default: "${ac_default_prefix}"/etc/${PACKAGE}/${PACKAGE}.conf)]),
-	[ if test ! -z "$with_microca_conf" ; then
+	AS_HELP_STRING([--with-app-conf=PATH],[set configuration file for minica to PATH (default: "${ac_default_prefix}"/etc/${PACKAGE}/${PACKAGE}.conf)]),
+	[ if test ! -z "$with_minica_conf" ; then
 		case $with_app_conf in
 			/*)
 				APP_SYSCONF="$with_app_conf"
@@ -126,7 +126,7 @@ AC_SUBST(APP_DBDIR, "$APP_DBDIR")
 
 
 AC_ARG_WITH(user,
-	AS_HELP_STRING([--with-user=microca],[set executing user name]),
+	AS_HELP_STRING([--with-user=minica],[set executing user name]),
 	[ if test ! -z "$with_user" ; then
 		case $with_user in
 			"")
@@ -137,14 +137,14 @@ AC_ARG_WITH(user,
 				;;
 		esac
 	else
-		APP_USER="microca"
+		APP_USER="minica"
 	fi ],
-	[ APP_USER="microca" ])
+	[ APP_USER="minica" ])
 AC_DEFINE_UNQUOTED(APP_USER, "$APP_USER", [effective user])
 AC_SUBST(APP_USER, "$APP_USER")
 
 AC_ARG_WITH(group,
-	AS_HELP_STRING([--with-group=microca],[set executing group name]),
+	AS_HELP_STRING([--with-group=minica],[set executing group name]),
 	[ if test ! -z "$with_group" ; then
 		case $with_group in
 			"")
@@ -155,9 +155,9 @@ AC_ARG_WITH(group,
 				;;
 		esac
 	else
-		APP_GROUP="microca"
+		APP_GROUP="minica"
 	fi ],
-	[ APP_GROUP="microca" ])
+	[ APP_GROUP="minica" ])
 AC_DEFINE_UNQUOTED(APP_GROUP, "$APP_GROUP", [effective group id])
 AC_SUBST(APP_GROUP, "$APP_GROUP")
 
@@ -200,9 +200,9 @@ Encode
 MIME::QuotedPrint
 ])
 
-AC_CONFIG_FILES([microca.conf])
+AC_CONFIG_FILES([minica.conf])
 
-AC_OUTPUT([Makefile microca.pl rc.d/microca lib/MicroCA.pm microca-cacert-import.pl microca-cert-import.pl])
+AC_OUTPUT([Makefile minica.pl rc.d/minica lib/MiniCA.pm minica-cacert-import.pl minica-cert-import.pl])
 dnl EOF
 
 

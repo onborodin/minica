@@ -12,7 +12,7 @@ use utf8;
 binmode(STDOUT,':utf8');
 use open qw/:std :utf8/;
 
-use lib '/usr/local/share/microca/lib';
+use lib '/usr/local/share/minica/lib';
 
 use Mojo::Server;
 use Mojo::File 'path';
@@ -181,11 +181,11 @@ if ($nofork) {
 
 =head1 NAME
 
-B<microca> is web application for creating and managing X509 certificates
+B<minica> is web application for creating and managing X509 certificates
 
 =head1 SYNOPSIS
 
-B<microca> [ -h | --help ] |
+B<minica> [ -h | --help ] |
  [ -4 | --ipv4listen=address:port ]
  [ -6 | --ipv6listen=[address]:port ]
  [ -c | --config=path ]

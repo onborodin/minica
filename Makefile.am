@@ -3,39 +3,39 @@
 #
 AUTOMAKE_OPTIONS = foreign no-dependencies no-installinfo
 
-sbin_SCRIPTS = microca microca-cacert-import microca-cert-import
+sbin_SCRIPTS = minica minica-cacert-import minica-cert-import
 
 databasedir = @APP_DBDIR@
-nobase_dist_database_DATA = microca.db.sample microca.pw.sample  microca.sql.sample
+nobase_dist_database_DATA = minica.db.sample minica.pw.sample  minica.sql.sample
 
 confdir = @APP_SYSCONFDIR@
-nobase_conf_DATA = microca.conf.sample
+nobase_conf_DATA = minica.conf.sample
 
 
-microca.db.sample: microca.db
-	cp microca.db microca.db.sample
+minica.db.sample: minica.db
+	cp minica.db minica.db.sample
 
-microca.pw.sample: microca.pw
-	cp microca.pw microca.pw.sample
+minica.pw.sample: minica.pw
+	cp minica.pw minica.pw.sample
 
-microca.sql.sample: microca.sql
-	cp microca.sql microca.sql.sample
+minica.sql.sample: minica.sql
+	cp minica.sql minica.sql.sample
 
-microca.conf.sample: microca.conf
-	cp microca.conf microca.conf.sample
+minica.conf.sample: minica.conf
+	cp minica.conf minica.conf.sample
 
 etcdir = /usr/local/etc
 
 if FREEBSD_OS
-nobase_etc_SCRIPTS = rc.d/microca
+nobase_etc_SCRIPTS = rc.d/minica
 endif
 
 EXTRA_DIST = \
 	LICENSE \
-	microca.pw \
-	microca.db \
-	microca.sql \
-	microca.8
+	minica.pw \
+	minica.db \
+	minica.sql \
+	minica.8
 
 
 nobase_dist_pkgdata_DATA = \
@@ -159,13 +159,13 @@ nobase_dist_pkgdata_DATA = \
 	public/jquery-ui/jquery-ui.theme.min.css \
 	\
 	templates/doc.html.ep \
-	public/docs/microca-lifecicle1.svg \
-	public/docs/microca-lifecicle2.svg
+	public/docs/minica-lifecicle1.svg \
+	public/docs/minica-lifecicle2.svg
 
 
 install-data-hook:
 if FREEBSD_OS
-	chmod a+x $(DESTDIR)/${etcdir}/rc.d/microca
+	chmod a+x $(DESTDIR)/${etcdir}/rc.d/minica
 endif
 	$(INSTALL) -d -m 750 -o $(APP_USER) -g $(APP_GROUP) $(DESTDIR)$(APP_DBDIR)
 	$(INSTALL) -d -m 750 -o $(APP_USER) -g $(APP_GROUP) $(DESTDIR)$(APP_LOGDIR)
@@ -176,28 +176,28 @@ endif
 	done
 
 
-man_MANS = microca.8
+man_MANS = minica.8
 
-microca.8: microca
-	pod2man microca > microca.8
+minica.8: minica
+	pod2man minica > minica.8
 
-microca: microca.pl
-	cp microca.pl microca
-	chmod a+x microca
+minica: minica.pl
+	cp minica.pl minica
+	chmod a+x minica
 
-microca.db: microca.sql
-	sqlite3 microca.db < microca.sql
-	chmod go-rw microca
+minica.db: minica.sql
+	sqlite3 minica.db < minica.sql
+	chmod go-rw minica
 
-microca-cert-import: microca-cert-import.pl
-	cp microca-cert-import.pl microca-cert-import
-	chmod a+x microca-cert-import
+minica-cert-import: minica-cert-import.pl
+	cp minica-cert-import.pl minica-cert-import
+	chmod a+x minica-cert-import
 
-microca-cacert-import: microca-cacert-import.pl
-	cp microca-cacert-import.pl microca-cacert-import
-	chmod a+x microca-cacert-import
+minica-cacert-import: minica-cacert-import.pl
+	cp minica-cacert-import.pl minica-cacert-import
+	chmod a+x minica-cacert-import
 
 clean:
-	rm -f microca *~ */*~ */*/*~ */*/*/*~
+	rm -f minica *~ */*~ */*/*~ */*/*/*~
 
 #EOF
