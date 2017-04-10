@@ -5,7 +5,7 @@
 # --- Model :: Users --
 #---------------------------------------
 
-package MicroCA::Model::Users;
+package MiniCA::Model::Users;
 
 
 use strict;
