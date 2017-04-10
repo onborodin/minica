@@ -4,7 +4,7 @@
 #--------------------------------------
 #--- Model :: CA ---
 #--------------------------------------
-package MicroCA::Model::CA;
+package MiniCA::Model::CA;
 
 use utf8;
 use open qw/:std :utf8/;

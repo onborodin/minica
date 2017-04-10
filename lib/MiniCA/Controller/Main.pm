@@ -6,7 +6,7 @@
 #--- Controller :: Main ---
 #-------------------------------------------
 
-package MicroCA::Controller::Main;
+package MiniCA::Controller::Main;
 
 use utf8;
 use strict;
