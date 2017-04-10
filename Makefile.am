@@ -6,10 +6,10 @@ AUTOMAKE_OPTIONS = foreign no-dependencies no-installinfo
 sbin_SCRIPTS = minica minica-cacert-import minica-cert-import
 
 databasedir = @APP_DBDIR@
-nobase_dist_database_DATA = minica.db.sample minica.pw.sample minica.sql
+nobase_dist_database_DATA = minica.db.example minica.pw.example minica-schema.sql minica.sql.example
 
 confdir = @APP_SYSCONFDIR@
-nobase_conf_DATA = minica.conf.sample
+nobase_conf_DATA = minica.conf.example
 
 etcdir = /usr/local/etc
 
@@ -18,11 +18,7 @@ nobase_etc_SCRIPTS = rc.d/minica
 endif
 
 EXTRA_DIST = \
-	LICENSE \
-	minica.pw.sample \
-	minica.db.sample \
-	minica.sql \
-	minica.8
+	LICENSE
 
 nobase_dist_pkgdata_DATA = \
 	public/favicon.png \
