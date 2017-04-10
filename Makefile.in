@@ -54,11 +54,12 @@ host_triplet = @host@
 subdir = .
 DIST_COMMON = $(am__configure_deps) $(nobase_dist_database_DATA) \
 	$(nobase_dist_pkgdata_DATA) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(srcdir)/microca-cacert-import.pl.in \
-	$(srcdir)/microca-cert-import.pl.in $(srcdir)/microca.conf.in \
-	$(srcdir)/microca.pl.in $(top_srcdir)/configure \
-	$(top_srcdir)/lib/MicroCA.pm.in $(top_srcdir)/rc.d/microca.in \
-	config.guess config.sub install-sh missing
+	$(srcdir)/Makefile.in $(srcdir)/minica-cacert-import.in \
+	$(srcdir)/minica-cert-import.in \
+	$(srcdir)/minica.conf.sample.in $(srcdir)/minica.in \
+	$(top_srcdir)/configure $(top_srcdir)/lib/MiniCA.pm.in \
+	$(top_srcdir)/rc.d/minica.in config.guess config.sub \
+	install-sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
 	$(top_srcdir)/configure.ac
@@ -67,8 +68,8 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
-CONFIG_CLEAN_FILES = microca.conf microca.pl rc.d/microca \
-	lib/MicroCA.pm microca-cacert-import.pl microca-cert-import.pl
+CONFIG_CLEAN_FILES = minica.conf.sample minica rc.d/minica \
+	lib/MiniCA.pm minica-cacert-import minica-cert-import
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -231,19 +232,31 @@ top_srcdir = @top_srcdir@
 # $Id$
 #
 AUTOMAKE_OPTIONS = foreign no-dependencies no-installinfo
-sbin_SCRIPTS = microca microca-cacert-import microca-cert-import
+sbin_SCRIPTS = minica minica-cacert-import minica-cert-import
 databasedir = @APP_DBDIR@
-nobase_dist_database_DATA = microca.db.sample microca.pw.sample  microca.sql.sample
+nobase_dist_database_DATA = minica.db.sample minica.pw.sample  minica.sql.sample
 confdir = @APP_SYSCONFDIR@
-nobase_conf_DATA = microca.conf.sample
+nobase_conf_DATA = minica.conf.sample
+
+#minica.db.sample: minica.db
+#	cp minica.db minica.db.sample
+
+#minica.pw.sample: minica.pw
+#	cp minica.pw minica.pw.sample
+
+#minica.sql.sample: minica.sql
+#	cp minica.sql minica.sql.sample
+
+#minica.conf.sample: minica.conf
+#	cp minica.conf minica.conf.sample
 etcdir = /usr/local/etc
-@FREEBSD_OS_TRUE@nobase_etc_SCRIPTS = rc.d/microca
+@FREEBSD_OS_TRUE@nobase_etc_SCRIPTS = rc.d/minica
 EXTRA_DIST = \
 	LICENSE \
-	microca.pw \
-	microca.db \
-	microca.sql \
-	microca.8
+	minica.pw.sample \
+	minica.db.sample \
+	minica.sql \
+	minica.8
 
 nobase_dist_pkgdata_DATA = \
 	public/favicon.png \
@@ -366,10 +379,10 @@ nobase_dist_pkgdata_DATA = \
 	public/jquery-ui/jquery-ui.theme.min.css \
 	\
 	templates/doc.html.ep \
-	public/docs/microca-lifecicle1.svg \
-	public/docs/microca-lifecicle2.svg
+	public/docs/minica-lifecicle1.svg \
+	public/docs/minica-lifecicle2.svg
 
-man_MANS = microca.8
+man_MANS = minica.8
 all: all-am
 
 .SUFFIXES:
@@ -407,17 +420,17 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	$(am__cd) $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 $(am__aclocal_m4_deps):
-microca.conf: $(top_builddir)/config.status $(srcdir)/microca.conf.in
+minica.conf.sample: $(top_builddir)/config.status $(srcdir)/minica.conf.sample.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-microca.pl: $(top_builddir)/config.status $(srcdir)/microca.pl.in
+minica: $(top_builddir)/config.status $(srcdir)/minica.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-rc.d/microca: $(top_builddir)/config.status $(top_srcdir)/rc.d/microca.in
+rc.d/minica: $(top_builddir)/config.status $(top_srcdir)/rc.d/minica.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-lib/MicroCA.pm: $(top_builddir)/config.status $(top_srcdir)/lib/MicroCA.pm.in
+lib/MiniCA.pm: $(top_builddir)/config.status $(top_srcdir)/lib/MiniCA.pm.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-microca-cacert-import.pl: $(top_builddir)/config.status $(srcdir)/microca-cacert-import.pl.in
+minica-cacert-import: $(top_builddir)/config.status $(srcdir)/minica-cacert-import.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-microca-cert-import.pl: $(top_builddir)/config.status $(srcdir)/microca-cert-import.pl.in
+minica-cert-import: $(top_builddir)/config.status $(srcdir)/minica-cert-import.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 install-nobase_etcSCRIPTS: $(nobase_etc_SCRIPTS)
 	@$(NORMAL_INSTALL)
@@ -923,20 +936,8 @@ uninstall-man: uninstall-man8
 	uninstall-sbinSCRIPTS
 
 
-microca.db.sample: microca.db
-	cp microca.db microca.db.sample
-
-microca.pw.sample: microca.pw
-	cp microca.pw microca.pw.sample
-
-microca.sql.sample: microca.sql
-	cp microca.sql microca.sql.sample
-
-microca.conf.sample: microca.conf
-	cp microca.conf microca.conf.sample
-
 install-data-hook:
-@FREEBSD_OS_TRUE@	chmod a+x $(DESTDIR)/${etcdir}/rc.d/microca
+@FREEBSD_OS_TRUE@	chmod a+x $(DESTDIR)/${etcdir}/rc.d/minica
 	$(INSTALL) -d -m 750 -o $(APP_USER) -g $(APP_GROUP) $(DESTDIR)$(APP_DBDIR)
 	$(INSTALL) -d -m 750 -o $(APP_USER) -g $(APP_GROUP) $(DESTDIR)$(APP_LOGDIR)
 	$(INSTALL) -d -m 750 -o $(APP_USER) -g $(APP_GROUP) $(DESTDIR)$(APP_PIDDIR)
@@ -945,27 +946,27 @@ install-data-hook:
 	  chmod 0640 $(DESTDIR)$(APP_DBDIR)/$$data; \
 	done
 
-microca.8: microca
-	pod2man microca > microca.8
+minica.8: minica
+	pod2man minica > minica.8
 
-microca: microca.pl
-	cp microca.pl microca
-	chmod a+x microca
+#minica: minica.pl
+#	cp minica.pl minica
+#	chmod a+x minica
 
-microca.db: microca.sql
-	sqlite3 microca.db < microca.sql
-	chmod go-rw microca
+#minica.db: minica.sql
+#	sqlite3 minica.db < minica.sql
+#	chmod go-rw minica
 
-microca-cert-import: microca-cert-import.pl
-	cp microca-cert-import.pl microca-cert-import
-	chmod a+x microca-cert-import
+#minica-cert-import: minica-cert-import.pl
+#	cp minica-cert-import.pl minica-cert-import
+#	chmod a+x minica-cert-import
 
-microca-cacert-import: microca-cacert-import.pl
-	cp microca-cacert-import.pl microca-cacert-import
-	chmod a+x microca-cacert-import
+#minica-cacert-import: minica-cacert-import.pl
+#	cp minica-cacert-import.pl minica-cacert-import
+#	chmod a+x minica-cacert-import
 
 clean:
-	rm -f microca *~ */*~ */*/*~ */*/*/*~
+	rm -f minica *~ */*~ */*/*~ */*/*/*~
 
 #EOF
 
