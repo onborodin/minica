@@ -62,7 +62,7 @@ All path option override option from configuration file
 }
 
 my $mojo_daemon = Mojo::Server::Prefork->new;
-my $app = $mojo_daemon->build_app('MicroCA');
+my $app = $mojo_daemon->build_app('MiniCA');
 
 $app->config(listen => $ipv4listen) if $ipv4listen;
 $app->config(listen => $ipv6listen) if $ipv6listen;
@@ -200,7 +200,7 @@ B<minica> [ -h | --help ] |
 
 =head1 DESCRIPTION
 
-MicroCA is web application for creating and managing X509 certificates.
+MiniCA is web application for creating and managing X509 certificates.
 
 You can
 

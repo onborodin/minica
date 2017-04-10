@@ -1,7 +1,7 @@
 #
 # $Id$
 #
-package MicroCA;
+package MiniCA;
 
 use utf8;
 use lib '@APP_DATADIR@/lib';
@@ -10,8 +10,8 @@ use Mojo::File;
 use Mojo::Home;
 use Mojo::Util qw(b64_encode b64_decode md5_sum);
 use Config::Simple;
-use MicroCA::Model::Users;
-use MicroCA::Model::CA;
+use MiniCA::Model::Users;
+use MiniCA::Model::CA;
 
 
 sub startup {
@@ -86,11 +86,11 @@ sub startup {
     #--- add model as state helper ---
     #---------------------------------
     $self->helper(users => sub {
-        state $users = MicroCA::Model::Users->new($self, $self->config('pwdfile'));
+        state $users = MiniCA::Model::Users->new($self, $self->config('pwdfile'));
     });
 
     $self->helper(ca => sub {
-        state $ca = MicroCA::Model::CA->new($self,
+        state $ca = MiniCA::Model::CA->new($self,
                                              $self->config('dsn'),
                                              $self->config('db_username'),
                                              $self->config('db_password')
