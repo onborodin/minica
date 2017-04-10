@@ -1,0 +1,183 @@
+% layout 'default';
+% title 'MicroCA';
+% use Encode qw(decode encode);
+
+
+% sub stripDN  {
+%     my $dn = shift;
+%     for my $n (split /\//, $dn) {
+%         my ($l, $r) = split /=/, $n;
+%         next unless $l;
+%         return $r if $l =~ /CN/;
+%     }
+% }
+
+
+
+<div id="crl-create"><!-- empty --></div>
+<div id="top-hook"><!-- empty --></div>
+
+
+<div id="message-window" class="middle reveal" data-reveal>
+    <div class="row">&nbsp;</div>
+    <div id="message-class">
+        <div id="message-context"><!-- empty --></div>
+    </div>
+    <div class="row">&nbsp;</div>
+    <button id="message-button" class="button" data-close="message-window">Close</button>
+    <button class="close-button" data-close="message-window">&times;</button>
+</div>
+
+
+<div id="crl-create-reveal" class="small reveal" data-reveal>
+    <form accept-charset="UTF-8" id="crl-create-form" action="" method="post" data-abide novalidate>
+
+        <h5>Create new CRL</h5>
+
+        <input type="hidden" name="request" value="crl-create" />
+
+        <label>Issuer
+            <select name="issuer_id" required>
+                <option value=""></option>
+% foreach my $cert (@{$self->app->ca->listCACert}) {
+                <option value="<%= $cert->{id} %>"><%= stripDN decode("utf-8", $cert->{subject}) %></option>
+% }
+                    <span class="form-error">Input password, please, 6 or more letters</span>
+
+            </select >
+        </label>
+        <label>Issuer private key password for signining, mandatory
+                <input type="password" name="issuer_password" placeholder="issuer password" required pattern="[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{5,24}"/>
+                    <span class="form-error">Input password, please, 6 or more letters</span>
+        </label>
+
+        <hr/>
+        <p class="text-center">
+            <button type="submit" class="success button">Accept</button>
+            <button type="button" class="button" data-close>Cancel</button>
+         </p>
+        <button type="button" class="close-button" data-close>&times;</button>
+    </form>
+</div>
+
+<script>
+$("#crl-create-reveal").draggable();
+</script>
+
+
+<script>
+$('#crl-create-form').foundation();
+
+$("#crl-create-form").on("submit", function(event) {
+    event.preventDefault();
+    return false;
+});
+$('#crl-create-form').on('formvalid.zf.abide', function(event) {
+    var data = $('#crl-create-form').serialize();
+    $('#crl-create-form')[0].reset();
+    $("#message-context").html('Data now will send, plase wait...');
+    $("#message-window").foundation('open');
+
+    $.post("/crls", data, function(data) {
+        $('#crl-create').prepend(data);
+    });
+});
+</script>
+
+
+<div id="crl-download-reveal" class="tiny reveal" data-reveal><!-- empty --></div>
+<div id="crl-delete-reveal" class="tiny reveal" data-reveal><!-- empty --></div>
+<div id="crl-show-reveal" class="middle reveal" data-reveal><!-- empty --></div>
+
+
+<script>
+$("#crl-download-reveal").draggable();
+$("#crl-delete-reveal").draggable();
+$("#crl-show-reveal").draggable();
+</script>
+
+<div class="text-right">
+    <a class="button" data-open="crl-create-reveal">Create CRL</a>
+</div>
+
+
+<form accept-charset="UTF-8" id="issuer-select-form" action="" method="post">
+    <input type="hidden" name="request" value="crl-list" />
+    <div class="row column small-5 medium-5">
+        <div class="input-group">
+            <span class="input-group-label">Issuer</span>
+            <select name="issuer_id" class="input-group-field">
+                <option value="">All issuers</option>
+% foreach my $cert (@{$self->app->ca->listCACert}) {
+                <option value="<%= $cert->{id} %>"><%= stripDN decode("utf-8", $cert->{subject}) %></option>
+% }
+            </select >
+            <div class="input-group-button">
+                <input type="submit" class="button" value="submit">
+            </div>
+        </div>
+    </div>
+</form>
+
+<hr/>
+
+<div id="message-text"></div>
+
+<div id="crl-table"><!-- table container -->
+  <table id="table" class="display" >
+    <thead>
+      <tr>
+        <td>Serial</td>
+        <td>Since</td>
+        <td>Issuer CN</td>
+        <td>Expire</td>
+        <td>Operation</td>
+      </tr>
+    </thead>
+  </table>
+</div> 
+
+<script>
+$("#issuer-select-form").on("submit", function(event) {
+    $("#message-window").foundation();
+    $("#message-window").foundation('open');
+
+    var message = '<p>Dowload data in progress. Please wait...</p>';
+    message += '<div id="crl-download-bar" class="progress" role="progressbar" tabindex="0">';
+    message += '<div id="crl-download-meter" class="progress-meter" style="width: 0%"></div>';
+    message += '</div>';
+
+    $("#message-context").html(message);
+
+    $("#crl-download-bar").foundation();
+    var progress = 0;
+    var timerId = setInterval(function() {
+        progress += 10;
+        if (progress > 90) progress = 0;
+        $("#crl-download-meter").css({ width : progress + '%' });
+    }, 200);
+
+    setTimeout(function() {
+        clearInterval(timerId);
+    }, 20000);
+
+    var data = $('#issuer-select-form').serialize();
+    $.post("/crls", data, function(data) {
+        clearInterval(timerId);
+        $("#message-window").foundation();
+        $("#message-window").foundation('close');
+        $('#crl-table').html(data);
+    });
+    return false;
+});
+
+$('#table').DataTable({
+        "lengthMenu": [[10, 25, 50, 100, 500 -1], [10, 25, 50, 100, 500, "All"]]
+});
+
+</script>
+
+<!-- end of content -->
+
+
+

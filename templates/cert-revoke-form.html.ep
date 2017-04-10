@@ -1,0 +1,50 @@
+% if ($success) {
+
+<form accept-charset="UTF-8" id="cert-revoke-form" action="/certs" method="post" data-abide novalidate>
+    <div class="row">&nbsp;</div>
+
+    <p class="lead text-center">You want revoke the certificate. Are you sure?</p>
+
+    <input type="hidden" name="request" value="cert-revoke" />
+    <input type="hidden" name="id" value="<%= $id %>" />
+    <input type="hidden" name="rowid" value="<%= $rowid %>" />
+
+    <label>Issuer private key password
+        <input type="password" name="password" placeholder="issuer key password" required pattern="[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{2,42}"/>
+        <span class="form-error">Please, input password for the operation</span>
+    </label>
+
+    <div class="row">&nbsp;</div>
+    <p class="text-center">
+        <button type="submit" class="success button">Accept</button>
+        <button type="button" class="button" data-close="cert-revoke-reveal">Cancel</button>
+    </p>
+    <button type="button" class="close-button" data-close="cert-revoke-reveal">&times;</button>
+</form>
+
+<script>
+$('#cert-revoke-form').foundation();
+
+$("#cert-revoke-form").on("submit", function(event) {
+    event.preventDefault();
+});
+
+$('#cert-revoke-form').on('formvalid.zf.abide', function(event) {
+    var data = $('#cert-revoke-form').serialize();
+    $.post("/certs", data, function(data) {
+        $('#top-hook').html(data);
+    });
+    $('#cert-revoke-form')[0].reset();
+});
+</script>
+% } else {
+
+    <div class="row">&nbsp;</div>
+%#    <div class="<%= $mLevel %>">
+        <div id="message-context"><%= $message %></div>
+%#    </div>
+    <div class="row">&nbsp;</div>
+    <button id="message-button" class="button" data-close>Close</button>
+    <button class="close-button" data-close>&times;</button>
+
+% }

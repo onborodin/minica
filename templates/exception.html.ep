@@ -1,0 +1,10 @@
+% layout 'default';
+% title 'MicroAPP Error';
+
+<h3>Exception</h3>
+
+<pre>  
+%= $exception
+</pre>
+
+

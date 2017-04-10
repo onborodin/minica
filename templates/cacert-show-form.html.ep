@@ -1,0 +1,19 @@
+<script>
+
+% if ($success) {
+(function () {
+    var data = { "request" : "cacert-show", 
+                 "id" : "<%= $id %>" 
+    };
+    $.post("/cacerts", data, function(data) {
+        $('#cacert-show-reveal').html(data);
+    });
+    $('#cacert-show-reveal').foundation('open');
+})();
+
+% } else {
+    $("#message-context").html('<%= $message  %>');
+    $("#message-window").foundation('open');
+% }
+
+</script>

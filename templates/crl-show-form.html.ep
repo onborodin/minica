@@ -1,0 +1,24 @@
+% if ($success) {
+
+<script>
+(function () {
+    var data = { "request" : "crl-show", 
+                 "id" : "<%= $id %>" 
+    };
+    $.post("/crls", data, function(data) {
+        $('#crl-show-reveal').html(data);
+    });
+    $('#crl-show-reveal').foundation('open');
+})();
+</script>
+
+% } else {
+
+    <div class="row">&nbsp;</div>
+%#    <div class="<%= $mLevel %>">
+        <div id="message-context"><%= $message %></div>
+%#    </div>
+    <div class="row">&nbsp;</div>
+    <button id="message-button" class="button" data-close>Close</button>
+    <button class="close-button" data-close>&times;</button>
+% }

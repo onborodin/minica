@@ -1,0 +1,21 @@
+% my $crlpem = $self->app->ca->getCRL($id);
+% my $crlDump = $self->app->ca->dumpCRL($crlpem);
+
+<div id="crl-show-div">
+<div class="callout secondary fixed">
+    <h5>CRL </h5>
+    <p class="text-left">
+        <pre>
+<%= $crlDump %>
+<%= $crlpem %>
+        </pre>
+    </p>
+</div>
+<p class="text-center">
+    <button type="button" class="button" data-close="crl-show-reveal">Close</button>
+</p>
+<button type="button" class="close-button" data-close="crl-show-reveal">&times;</button>
+
+<script>
+$('#crl-show-div').foundation();
+</script>

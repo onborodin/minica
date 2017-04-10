@@ -1,0 +1,354 @@
+% layout 'default';
+% title 'MicroCA CA';
+% use Mojo::Util qw(b64_encode b64_decode md5_sum dumper);
+% use Encode qw(decode encode);
+
+% use utf8;
+% use strict;
+% binmode(STDOUT,':utf8');
+% use open qw/:std :utf8/;
+
+
+<div id="message-window" class="middle reveal" data-reveal>
+    <div class="row">&nbsp;</div>
+    <div id="message-class">
+        <div id="message-context"><!-- empty --></div>
+    </div>
+    <div class="row">&nbsp;</div>
+    <button id="message-button" class="button" data-close="message-window">Close</button>
+    <button class="close-button" data-close="message-window">&times;</button>
+</div>
+
+<div id="cacert-create-reveal" class="small reveal" data-reveal>
+
+    <form accept-charset="UTF-8" id="cacert-create-form" action="" method="post" data-abide novalidate>
+
+        <h5>Create new CA key and certificate</h5>
+
+        <input type="hidden" name="request" value="cacert-create" />
+
+        <label>C, Country name, 2 letters, optional
+            <input type="text" name="country" placeholder="country" pattern="[a-zA-Z]{2,2}"/>
+            <span class="form-error">Fill the box, 2 letters</span>
+        </label>
+        <label>ST, State or province name, optional
+            <input type="text" name="state" placeholder="state" />
+        </label>
+        <label>L, Locality name, optional
+            <input type="text" name="locality" placeholder="locality" />
+        </label>
+        <label>O, Organization name, optional
+            <input type="text" name="org" placeholder="organisation" />
+        </label>
+        <label>OU, Organizational unit name, optional
+            <input type="text" name="org_unit" placeholder="organisation unit" />
+        </label>
+        <label><b>CN</b>, Common name, mandatory
+            <input type="text" name="common_name" placeholder="common name" required pattern="[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+"/>
+            <span class="form-error">CN is mandatory</span>
+        </label>
+
+%#        <label>Subject Alt Name, CN, optional
+%#            <input type="text" name="subject_alt_name" placeholder="DNS:www.some.org,www2.some.org" />
+%#        </label>
+
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <label>Private key password, mandatory
+                            <input type="password" name="password" placeholder="password" required pattern="[a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{6,24}"/>
+                            <span class="form-error">Input password, please, 6 or more letters</span>
+                        </label>
+                    </td>
+                    <td>
+                        <label>Day of usage
+                        <input type="number" name="lifetime" placeholder="days" value="7300" />
+                        </label>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <label>Private key cypher type
+                            <select class="input-group-field" name="cipher_type">
+                                <option value="AES128">AES128</option>
+                                <option value="AES192">AES192</option>
+                                <option value="AES256">AES256</option>
+                                <option value="DES3">DES3</option>
+                                <option value="IDEA">IDEA</option>
+                                </select >
+                        </label>
+                    </td>
+                    <td>
+                    <label>Sign digests type
+                        <select class="input-group-field" name="digest_type">
+                            <option value="SHA224">SHA224</option>
+                            <option value="SHA256">SHA256</option>
+                            <option value="SHA384">SHA384</option>
+                            <option value="SHA512">SHA512</option>
+                        </select >
+                    </label>
+                    </td>
+                    <td>
+                    <label>Private key size
+                        <select class="input-group-field" name="key_size">
+                            <option value="2048">2048</option>
+                            <option value="4096">4096</option>
+                        </select >
+                    </label>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <hr/>
+        <p class="text-center">
+            <button type="submit" class="success button">Accept</button>
+            <button type="button" class="button" data-close>Cancel</button>
+         </p>
+        <button type="button" class="close-button" data-close>&times;</button>
+    </form>
+</div>
+
+<script>
+$("#cacert-create-reveal").draggable();
+</script>
+
+<div id="cacert-import-reveal" class="large reveal" data-reveal>
+    <form accept-charset="UTF-8" id="cacert-import-form" action="" method="post"  data-abide novalidate>
+        <div class="row">&nbsp;</div>
+
+        <h5>Import CA key and certificate</h5>
+
+        <input type="hidden" name="request" value="cacert-import" />
+
+        <label>CA cert and key 
+            <textarea rows="20" name="pem" placeholder="certificate and key in pem form" required></textarea>
+            <span class="form-error">Cert is mandatory</span>
+        </label>
+
+        <label>CA private key password for store and/or verifycation
+            <input type="password" name="password" placeholder="ca private key password" />
+        </label>
+
+        <div class="row">&nbsp;</div>
+        <p class="text-center">
+            <button type="submit" class="success button">Accept</button>
+            <button type="button" class="button" data-close>Cancel</button>
+         </p>
+        <button type="button" class="close-button" data-close>&times;</button>
+    </form>
+</div>
+
+<script>
+$("#cacert-import-reveal").draggable();
+</script>
+
+<p class="text-right">
+    <a class="button" data-open="cacert-create-reveal">Create CA cert</a>
+    <a class="button" data-open="cacert-import-reveal">Import CA cert</a>
+</p>
+
+<script>
+$('#cacert-create-form').foundation();
+$("#cacert-create-form").on("submit", function(event) {
+    event.preventDefault();
+});
+$('#cacert-create-form').on('formvalid.zf.abide', function(event) {
+    var data = $('#cacert-create-form').serialize();
+    $('#cacert-create-form')[0].reset();
+    $("#message-context").html('Data now will send, plase wait...');
+    $("#message-window").foundation('open');
+
+    $.post("/cacerts", data, function(data) {
+        $('#cacert-create').prepend(data);
+    });
+});
+</script>
+
+<script>
+$('#cacert-import-form').foundation();
+$("#cacert-import-form").on("submit", function(event) {
+    event.preventDefault();
+});
+$('#cacert-import-form').on('formvalid.zf.abide', function(event) {
+    var data = $('#cacert-import-form').serialize();
+    $('#cacert-import-form')[0].reset();
+    $("#message-context").html('Data now will send, plase wait...');
+    $("#message-window").foundation('open');
+    $.post("/cacerts", data, function(data) {
+        $('#cacert-create').prepend(data);
+    });
+});
+</script>
+
+<div id="cacert-revoke-reveal" class="tiny reveal" data-reveal><!-- empty --></div>
+<div id="cacert-unrevoke-reveal" class="tiny reveal" data-reveal><!-- empty --></div>
+<div id="cacert-download-reveal" class="tiny reveal" data-reveal><!-- empty --></div>
+<div id="cacert-delete-reveal" class="tiny reveal" data-reveal><!-- empty --></div>
+<div id="cacert-show-reveal" class="large reveal" data-reveal><!-- empty --></div>
+
+<script>
+$("#cacert-revoke-reveal").draggable();
+$("#cacert-unrevoke-reveal").draggable();
+$("#cacert-download-reveal").draggable();
+$("#cacert-delete-reveal").draggable();
+
+%#$("#cacert-show-reveal").draggable();
+
+</script>
+
+<div id="cacert-create"><!-- empty --></div>
+<div id="top-hook"><!-- empty --></div>
+
+% sub stripDN  {
+%     my $dn = shift;
+%     for my $n (split /\//, $dn) {
+%         my ($l, $r) = split /=/, $n;
+%         next unless $l;
+%         return $r if ($l =~ /CN/);
+%     }
+% }
+% sub stripDate {
+%   my $a = substr shift, 0, 10;
+%   $a =~ s/\//-/g;
+%   return $a;
+% }
+
+<table id="table" class="display">
+    <thead>
+        <tr>
+            <td>Since</td>
+            <td>Subject CN</td>
+            <td>Expires</td>
+            <td>Revoked</td>
+            <td>Operation</td>
+        </tr>
+    </thead>
+    <tbody id="table-body">
+
+% my $listCACert = $self->app->ca->listCACert;
+% foreach my $cert (@{$listCACert}) {
+%   my $rowid = md5_sum $cert->{id};
+%   my $id = $cert->{id};
+%   $cert->{revokedate} = $cert->{revokedate} || '';
+        <tr id="<%= $rowid %>">
+            <td><%= stripDate $cert->{begindate} %></td>
+            <td id="subject-<%= $rowid %>"><%= stripDN decode("utf-8", $cert->{subject}) %></td>
+            <td><%= stripDate $cert->{expiredate} %></td>
+            <td><%= stripDate $cert->{revokedate} %></td>
+            <td>
+                <a id="button-show-<%= $rowid %>" class="no-frame hollow button">S</a>
+
+%   unless (length $cert->{revokedate}) {
+                <a id="button-revoke-<%= $rowid %>" class="no-frame hollow button">R</a>
+%   } else {
+                    <a id="button-unrevoke-<%= $rowid %>" class="no-frame hollow button">
+                        <span class="text warning">U</span>
+                    </a>
+%   }
+                <a id="button-download-<%= $rowid %>" class="no-frame hollow button">&#9660;</a>
+                <a id="button-delete-<%= $rowid %>" class="no-frame hollow button">&times;</a>
+            </td>
+        </tr>
+% }
+    </tbody>
+</table>
+
+% foreach my $cert (@{$listCACert}) {
+%   my $rowid = md5_sum $cert->{id};
+%   my $id = $cert->{id};
+
+<script>
+$("#subject-<%= $rowid %>").click(function() {
+    var request = 'cacert-show-form';
+    var id = '<%= $id %>';
+    var rowid = '<%= $rowid %>';
+    $.post('/cacerts', { "request" : request,
+                      "rowid" : rowid,
+                      "id" : id 
+                    }, function(data) {
+        $('#top-hook').html(data);
+    });
+});
+
+
+$("#button-show-<%= $rowid %>").click(function() {
+    var request = 'cacert-show-form';
+    var id = '<%= $id %>';
+    var rowid = '<%= $rowid %>';
+    $.post('/cacerts', { "request" : request,
+                      "rowid" : rowid,
+                      "id" : id 
+                    }, function(data) {
+        $('#top-hook').html(data);
+    });
+});
+
+$("#button-revoke-<%= $rowid %>").click(function() {
+    var request = 'cacert-revoke-form';
+    var id = '<%= $id %>';
+    var rowid = '<%= $rowid %>';
+    $.post('/cacerts', { "request" : request,
+                      "rowid" : rowid,
+                      "id" : id 
+                    }, function(data) {
+        $('#cacert-revoke-reveal').html(data);
+        $('#cacert-revoke-reveal').foundation('open');
+    });
+});
+
+$("#button-unrevoke-<%= $rowid %>").click(function() {
+    var request = 'cacert-unrevoke-form';
+    var id = '<%= $id %>';
+    var rowid = '<%= $rowid %>';
+    $.post('/cacerts', { "request":request,
+                      "rowid": rowid,
+                      "id":id 
+                    }, function(data) {
+        $('#cacert-unrevoke-reveal').html(data);
+        $('#cacert-unrevoke-reveal').foundation('open');
+    });
+});
+
+$("#button-download-<%= $rowid %>").click(function() {
+    var request = 'cacert-download-form';
+    var id = '<%= $id %>';
+    var rowid = '<%= $rowid %>';
+    $.post('/cacerts', { "request" : request,
+                      "rowid" : rowid,
+                      "id" : id 
+                    }, function(data) {
+        $('#cacert-download-reveal').html(data);
+        $('#cacert-download-reveal').foundation('open');
+    });
+});
+
+$("#button-delete-<%= $rowid %>").click(function() {
+    var request = 'cacert-delete-form';
+    var id = '<%= $id %>';
+    var rowid = '<%= $rowid %>';
+    $.post('/cacerts', { "request" : request,
+                      "rowid" : rowid,
+                      "id" : id 
+                    }, function(data) {
+        $('#cacert-delete-reveal').html(data);
+        $('#cacert-delete-reveal').foundation('open');
+    });
+});
+</script>
+
+% }
+
+<script>
+$(document).ready(function() {
+    $('#table').DataTable();
+} );
+</script>
+
+
+<!-- end of content -->
+

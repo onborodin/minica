@@ -1,0 +1,150 @@
+% use Mojo::Util qw(b64_encode b64_decode md5_sum dumper);
+% use Encode qw(decode encode);
+
+% sub stripDN  {
+%     my $dn = shift;
+%     for my $n (split /\//, $dn) {
+%         my ($l, $r) = split /=/, $n;
+%         next unless $l;
+%         return $r if $l =~ /CN/;
+%     }
+% }
+% sub stripDate {
+%   my $a = substr shift, 0, 10;
+%   $a =~ s/\//-/g;
+%   return $a;
+% }
+
+% if ($success) {
+
+<table id="table" class="display" >
+    <thead>
+      <tr>
+        <td>Serial</td>
+        <td>Since</td>
+        <td>Issuer CN</td>
+        <td>Subject CN</td>
+        <td>Expires</td>
+        <td>Revoked</td>
+        <td>Operation</td>
+      </tr>
+    </thead>
+    <tbody>
+
+%   my $certList = length $issuerId ? $self->app->ca->listCert(issuerId => $issuerId) : $self->app->ca->listCert;
+%   foreach my $cert (@{$certList}) {
+%   my $rowid = md5_sum $cert->{id};
+%     my $id = $cert->{id};
+%     $cert->{revokedate} = $cert->{revokedate} || '';
+
+    <tr id="<%= $rowid %>">
+        <td><%= sprintf("0x%X", $cert->{serial}) %></button></td>
+        <td><%= stripDate $cert->{begindate} %></td>
+        <td><%= stripDN decode("utf-8", $cert->{issuer}) %></td>
+        <td><%= stripDN decode("utf-8", $cert->{subject}) %></td>
+        <td><%= stripDate $cert->{expiredate} %></td>
+        <td><%= stripDate $cert->{revokedate} %></td>
+        <td>
+            <a id="button-show-<%= $rowid %>" class="no-frame hollow button">S</a>
+%       unless (length $cert->{revokedate}) {
+            <a id="button-revoke-<%= $rowid %>" class="no-frame hollow button">R</a>
+%       } else {
+                <a id="button-unrevoke-<%= $rowid %>" class="no-frame hollow button">
+                        <span class="text warning">U</span>
+                </a>
+%       }
+            <a id="button-download-<%= $rowid %>" class="no-frame hollow button">&#9660;</a>
+            <a id="button-delete-<%= $rowid %>" class="no-frame hollow button">&times;</a>
+        </td>
+    </tr>
+%   }
+    </tbody>
+</table>
+
+%   foreach my $cert (@{$certList}) {
+%     my $rowid = md5_sum $cert->{id};
+%     my $id = $cert->{id};
+
+<script>
+$("#button-show-<%= $rowid %>").click(function() {
+    var request = 'cert-show-form';
+    var id = '<%= $id %>';
+    var rowid = '<%= $rowid %>';
+    $.post('/certs', { "request" : request,
+                      "rowid" : rowid,
+                      "id" : id 
+                    }, function(data) {
+        $('#top-hook').html(data);
+    });
+});
+
+$("#button-revoke-<%= $rowid %>").click(function() {
+    var request = 'cert-revoke-form';
+    var id = '<%= $id %>';
+    var rowid = '<%= $rowid %>';
+    $.post('/certs', { "request" : request,
+                      "rowid" : rowid,
+                      "id" : id 
+                    }, function(data) {
+        $('#cert-revoke-reveal').html(data);
+        $('#cert-revoke-reveal').foundation('open');
+    });
+});
+
+$("#button-unrevoke-<%= $rowid %>").click(function() {
+    var request = 'cert-unrevoke-form';
+    var id = '<%= $id %>';
+    var rowid = '<%= $rowid %>';
+    $.post('/certs', { "request":request,
+                      "rowid": rowid,
+                      "id":id 
+                    }, function(data) {
+        $('#cert-unrevoke-reveal').html(data);
+        $('#cert-unrevoke-reveal').foundation('open');
+    });
+});
+
+$("#button-download-<%= $rowid %>").click(function() {
+    var request = 'cert-download-form';
+    var id = '<%= $id %>';
+    var rowid = '<%= $rowid %>';
+    $.post('/certs', { "request" : request,
+                      "rowid" : rowid,
+                      "id" : id 
+                    }, function(data) {
+        $('#cert-download-reveal').html(data);
+        $('#cert-download-reveal').foundation('open');
+    });
+});
+
+$("#button-delete-<%= $rowid %>").click(function() {
+    var request = 'cert-delete-form';
+    var id = '<%= $id %>';
+    var rowid = '<%= $rowid %>';
+    $.post('/certs', { "request" : request,
+                      "rowid" : rowid,
+                      "id" : id 
+                    }, function(data) {
+        $('#cert-delete-reveal').html(data);
+        $('#cert-delete-reveal').foundation('open');
+    });
+});
+</script>
+
+%   }
+
+<script>
+$('#table').DataTable({
+        "lengthMenu": [[10, 25, 50, 100, 500 -1], [10, 25, 50, 100, 500, "All"]]
+});
+</script>
+
+% } else {
+<script>
+    $("#message-context").html('<%= $message  %>');
+    $("#message-window").foundation('open');
+</script>
+    <%= $message  %>
+% }
+
+<!-- end of content -->

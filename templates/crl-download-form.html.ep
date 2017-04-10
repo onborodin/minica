@@ -1,0 +1,33 @@
+% if ($success) {
+
+<form accept-charset="UTF-8" id="crl-download-form" action="/crls" method="post" target="_blank">
+    <div class="row">&nbsp;</div>
+
+    <p class="lead text-center">You want download the CRL. Are you sure?</p>
+
+    <input type="hidden" name="request" value="crl-download" />
+    <input type="hidden" name="id" value="<%= $id %>" />
+    <input type="hidden" name="rowid" value="<%= $rowid %>" />
+
+    <div class="row">&nbsp;</div>
+    <p class="text-center">
+        <button type="submit" class="success button" data-close>Accept</button>
+        <button type="button" class="button" data-close="crl-download-reveal">Cancel</button>
+    </p>
+    <button type="button" class="close-button" data-close="crl-download-reveal">&times;</button>
+</form>
+
+<script>
+$('#crl-download-form').foundation();
+</script>
+% } else {
+
+    <div class="row">&nbsp;</div>
+%#    <div class="<%= $mLevel %>">
+        <div id="message-context"><%= $message %></div>
+%#    </div>
+    <div class="row">&nbsp;</div>
+    <button id="message-button" class="button" data-close>Close</button>
+    <button class="close-button" data-close>&times;</button>
+
+% }

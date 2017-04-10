@@ -1,0 +1,268 @@
+#!@PERL@
+
+
+#-------------------------------------------
+# --- MAIN                               ---
+#-------------------------------------------
+
+use strict;
+use warnings;
+use utf8;
+
+binmode(STDOUT,':utf8');
+use open qw/:std :utf8/;
+
+use lib '/usr/local/share/microca/lib';
+
+use Mojo::Server;
+use Mojo::File 'path';
+use Mojo::UserAgent::Server;
+use Mojo::Util qw(monkey_patch b64_encode b64_decode md5_sum getopt dumper);
+use Mojo::Server::Daemon;
+use Mojo::Server::Prefork;
+
+
+getopt
+    'h|help' => \my $help,
+    '4|ipv4listen=s' => \my $ipv4listen,
+    '6|ipv6listen=s' => \my $ipv6listen,
+    'c|config=s' => \my $conffile,
+    'p|pwdfile=s' => \my $pwdfile,
+    'd|datadir=s' => \my $datadir,
+    'l|logfile=s' => \my $logfile,
+    'i|pidfile=s' => \my $pidfile,
+    'v|verbose=s' => \my $verbose,
+    'f|nofork' => \my $nofork,
+    'u|user=s' => \my $owner,
+    'g|group=s' => \my $group;
+
+
+if ($help) {
+    print qq(
+Usage: app [OPTIONS]
+
+Options
+    -h | --help                      This help
+    -4 | --ipv4listen=address:port      Listen address and port, defaults 127.0.0.1:5100
+    -6 | --ipv6listen=[address]:port    Listen address and port, defaults [::1]:5100
+
+    -c | --config=path    Path to config file
+    -p | --pwdfile=path   Path to user password file
+    -d | --datadir=path   Path to application files 
+    -l | --logfile=path   Path to log file
+    -i | --pidfile=path   Path to process ID file
+    -v | --verbose=level  Verbose level: debug, info, warn, error, fatal
+    -u | --user=user      System owner of process
+    -g | --group=group    System group 
+    -f | --nofork         Dont fork process, for debugging
+All path option override option from configuration file
+
+    )."\n";
+    exit 0;
+}
+
+my $mojo_daemon = Mojo::Server::Prefork->new;
+my $app = $mojo_daemon->build_app('MicroCA');
+
+$app->config(listen => $ipv4listen) if $ipv4listen;
+$app->config(listen => $ipv6listen) if $ipv6listen;
+
+$app->config(pwdfile => $pwdfile) if $pwdfile;
+$app->config(datadir => $datadir) if $datadir;
+$app->config(logfile => $logfile) if $logfile;
+$app->config(pidfile => $pidfile) if $pidfile;
+$app->config(verbose => $verbose) if $verbose;
+
+$app->config(owner => $owner) if $owner;
+$app->config(group => $group) if $group;
+
+my $tlsParam = '';
+
+do {
+    do { print "Cannot read TSL certificate ".$app->config('tlscert')."\n"; exit 1;
+    } unless (-R $app->config('tlscert'));
+    do { print "Cannot read TSL key ".$app->config('tlscert')."\n"; exit 1;
+    } unless (-R $app->config('tlscert'));
+
+    $tlsParam .= '?';
+    $tlsParam .= 'cert='.$app->config('tlscert');
+    $tlsParam .= '&key='.$app->config('tlskey');
+
+} if $app->config('tlscert') && $app->config('tlskey');
+
+do {
+    do { print "Cannot read TLS CA certificate ".$app->config('tlsca')."\n"; exit 1;
+    } unless (-R $app->config('tlsca'));
+    $tlsParam .= '&ca='.$app->config('tlsca');
+} if $app->config('tlsca');
+
+
+my @listen = ();
+push (@listen, 'https://'.$app->config('ipv4listen').$tlsParam) if $app->config('ipv4listen');
+push (@listen, 'https://'.$app->config('ipv6listen').$tlsParam) if $app->config('ipv6listen');
+
+#$mojo_daemon->listen(['https://'.$app->config('ipv4listen')]);
+#$mojo_daemon->listen(['https://'.$app->config('ipv6listen')]);
+$mojo_daemon->listen(\@listen);
+
+
+$app->plugin('RenderFile');
+
+$app->mode('production');
+$app->secrets([md5_sum(localtime(time).rand(1024))]);
+$app->log->level($app->config('verbose'));
+
+$app->static->paths->[0] = $app->config('datadir').'/public';
+$app->renderer->paths->[0] = $app->config('datadir').'/templates';
+
+#-----------------------------
+#--- check system accounts ---
+#-----------------------------
+
+$app->config(owner => 'root') unless $app->config('owner');
+$app->config(group => 'wheel') unless $app->config('group');
+
+$owner = $app->config('owner');
+$group = $app->config('group');
+
+my $own_uid = getpwnam($owner);
+my $own_gid = getgrnam($group);
+
+unless (defined $own_uid) { print "System user ".$app->config('owner')." not exist. Exit.\n"; exit; }
+unless (defined $own_gid) { print "System group ".$app->config('group')." not exist. Exit.\n"; exit; }
+
+$mojo_daemon->heartbeat_interval(3);
+$mojo_daemon->heartbeat_timeout(60);
+
+#--------------------
+#--- fork process ---
+#--------------------
+
+use POSIX qw(setuid setgid);
+
+$0 = __FILE__;
+
+$mojo_daemon->pid_file($app->config('pidfile'));
+#print $app->config('pidfile');
+#print $own_uid."\n";
+#print $own_gid."\n";
+
+if ($nofork) {
+    setuid($own_uid) if $own_uid;
+    setgid($own_gid) if $own_gid;
+    $mojo_daemon->run;
+} else {
+    my $pid = fork;
+    if ($pid == 0) {
+        setuid($own_uid) if $own_uid;
+        setgid($own_gid) if $own_gid;
+        $app->log(Mojo::Log->new(
+                path => $app->config('logfile'), 
+                level => $app->config(verbose => $verbose))
+        );
+        open (my $STDOUT_OLD, '>&', STDOUT);
+        open (STDOUT, '>>', '/dev/null');
+        open (my $STDERR_OLD, '>&', STDERR);
+        open (STDERR, '>>', '/dev/null');
+        chdir('/');
+        local $SIG{HUP} = sub { 
+                $app->log->info('Catch HUP signal'); 
+                # renew log object by HUP
+                $app->log(Mojo::Log->new(
+                    path => $app->config('logfile'), 
+                    level => $app->config(verbose => $verbose))
+                );
+        };
+        $mojo_daemon->run;
+    }
+}
+
+=pod
+
+=head1 NAME
+
+B<microca> is web application for creating and managing X509 certificates
+
+=head1 SYNOPSIS
+
+B<microca> [ -h | --help ] |
+ [ -4 | --ipv4listen=address:port ]
+ [ -6 | --ipv6listen=[address]:port ]
+ [ -c | --config=path ]
+ [ -p | --pwdfile=path ]
+ [ -d | --datadir=path ]
+ [ -l | --logfile=path ]
+ [ -i | --pidfile=path ]
+ [ -v | --verbose=level ]
+ [ -u | --user=user ]
+ [ -g | --group=group ]
+ [ -f | --nofork ]
+
+=head1 DESCRIPTION
+
+MicroCA is web application for creating and managing X509 certificates.
+
+You can
+
+=over 3
+
+=item * Create or import a pairs of root certificate and key
+
+=item * Create, store encripted and export a lot of user certificates
+
+=item * Revoke/unrevoke certificates and
+
+=item * Create and export a revocation list
+
+=item * Use national symbols in cerificate names
+
+=item * The number of certificates is limited by hardware of your server and your web browser. I use this application to manage more than 3,000 corporate certificates.
+
+=back
+
+
+=head1 FEATURES
+
+Now the application in beta release state and needs some refinement but work.
+
+=over 3
+
+=item * Import/export certificates and keys is PEM coded.
+
+=item * The CA private key storage format is encrypted PKCS#5 with the CA password.
+
+=item * End user private key store encrypted by CA public key and random secure word and can decrypted only by CA private key and CA password
+
+=item * Export of private keys encrypted as PKCS#5 with your export password.
+
+=item * KISS interface
+
+=item * To store certificates by default use SQLite3 but you can use another SQL manager, PostgresQL or MySQL.
+
+=back
+
+=head1 AUTHOR
+
+Oleg Borodin <onborodin@gmail.com>
+
+=head1 LICENCE
+
+I<Creative Commons Legal Code, Attribution-NoDerivs 3.0 Unported>
+L<https://creativecommons.org/licenses/by-nd/3.0/legalcode>
+
+=head1 SEE ALSO
+
+=over 3 
+
+=item RFC5280, Internet X.509 Public Key Infrastructure Certificate
+   and Certificate Revocation List (CRL) Profile
+L<https://tools.ietf.org/html/rfc5280>
+
+=back
+
+=cut
+
+
+
+#EOF
+

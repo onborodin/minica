@@ -1,0 +1,160 @@
+#!@PERL@
+
+use strict;
+use warnings;
+use feature qw(say);
+
+use Crypt::OpenSSL::Random;
+use Crypt::OpenSSL::RSA;
+use Crypt::OpenSSL::CA;
+use Crypt::OpenSSL::X509;
+use Config::Simple;
+use Mojo::File qw(path);
+use Mojo::Util qw(monkey_patch b64_encode b64_decode md5_sum getopt dumper sha1_sum);
+use DBI;
+
+
+sub readfile {
+    my $file = shift || '/dev/null';
+    my $h;
+    if (open($h, '<', $file)) {
+        my @out = <$h>;
+        return join '', @out;
+    } else {
+        return undef;
+    }
+}
+
+
+sub fromZulu {
+  my $date = shift;
+  return undef unless $date;
+  #20180226163341Z
+  #01234567890123
+  my $year = substr $date, 0, 4;
+  my $month = substr $date, 4, 2;
+  my $day = substr $date, 6, 2;
+  my $hour = substr $date, 8, 2;
+  my $min = substr $date, 10, 2;
+  my $sec = substr $date, 12, 2;
+
+  return "$year/$month/$day $hour:$min:$sec";
+}
+
+
+sub help {
+    print qq(
+Usage: app [OPTIONS]
+
+Options
+    -h | --help           This help
+    -c | --cert=file
+    -k | --key=file
+    -p | --password=password
+    )."\n";
+    exit 0;
+}
+
+help unless scalar @ARGV;
+
+getopt
+    'h|help' => \my $help,
+    'c|cert=s' => \my $certfile,
+    'k|key=s' => \my $keyfile,
+    'p|password=s' => \my $password;
+
+help if $help;
+
+do { print "\nPassword is mandatory for verification and storage\n"; help; } unless $password;
+
+
+my $key = readfile($keyfile);
+do { print "Connot read key file $keyfile\n"; exit 1; } unless $key;
+
+my $rsa;
+eval { 
+    $rsa = Crypt::OpenSSL::RSA->new_private_key($key, $password); 
+};
+do { print "Cannot parse or decrypt private key $keyfile\n"; exit 1;}  if $@;
+
+#$rsa->get_private_key_string;
+
+my $cert = readfile($certfile);
+do { print "Connot read certificate file $certfile\n"; exit 1; } unless $cert;
+
+
+my $x509;
+eval {
+    $x509 = Crypt::OpenSSL::CA::X509->parse($cert);
+};
+do { print "Cannot parse certificate file\n"; exit 1; } if $@;
+
+#---------------------------------------
+#--- this certificate self-signed? ? ---
+#---------------------------------------
+my $pubkey = $x509->get_public_key;
+eval {
+        $x509->verify($pubkey);
+};
+do {print "Certificate $certfile is not self-signed\n"; exit 1; } if $@;
+
+
+do {print "Cerificate $certfile have not X509v3 Basic Constraints with CA=true\n"; exit 1; } unless $x509->dump =~ m/CA:TRUE/;
+
+#----------------------------------
+#--- this key and cert is pair? ---
+#----------------------------------
+do {print "Certificate $certfile and key file $keyfile is not pair\n"; exit 1; }
+    unless md5_sum($rsa->get_public_key_x509_string) eq md5_sum($x509->get_public_key->to_PEM);
+
+
+#---------------------------------
+#--- collect data ----------------
+#---------------------------------
+
+
+my $cfgfile = "@APP_SYSCONF@";
+
+my $cfg = Config::Simple->new;
+$cfg->syntax('simple');
+$cfg->read($cfgfile);
+
+my $db_driver = $cfg->param('db_driver') || 'SQLite';
+my $db_host = $cfg->param('db_host') || '';
+my $db_port = $cfg->param('db_port') || '';
+my $db_name = $cfg->param('db_name') || '@APP_DBDIR@/@PACKAGE@.db';
+
+my $dsn = "DBI:$db_driver:database=$db_name;host=$db_host;port=$db_port";
+my $db_username = $cfg->param('db_username')  || '';
+my $db_password = $cfg->param('db_password') || '';
+
+
+$key = $rsa->get_private_key_string($password, 'AES256');
+$cert = Crypt::OpenSSL::X509->new_from_string($cert)->as_string;
+
+my $id = $x509->get_serial.'::'.$x509->get_public_key->get_openssl_keyid;
+my $subject = $x509->get_subject_DN->to_string;
+my $issuer = $x509->get_issuer_DN->to_string;
+my $begindate = fromZulu($x509->get_notBefore);
+my $expiredate = fromZulu($x509->get_notAfter);
+my $serial = hex($x509->get_serial);
+
+$cert = b64_encode($cert, '');
+$key = b64_encode($key, '');
+
+
+my $dbi = DBI->connect($dsn, $db_username, $db_password);
+my $query = "insert into cacert (id, serial, subject, begindate, expiredate, cert, key)
+                      values ('$id',
+                              '$serial',
+                              '$subject',
+                              '$begindate',
+                              '$expiredate',
+                              '$cert',
+                              '$key');";
+
+my $rows = $dbi->do($query);
+$dbi->disconnect;
+
+#EOF
+

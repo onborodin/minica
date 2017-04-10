@@ -1,0 +1,115 @@
+% use Mojo::Util qw(b64_encode b64_decode md5_sum dumper);
+% use Encode qw(decode encode);
+
+
+% sub stripDN  {
+%     my $dn = shift;
+%     for my $n (split /\//, $dn) {
+%         my ($l, $r) = split /=/, $n;
+%         next unless $l;
+%         return $r if $l =~ /CN/;
+%     }
+% }
+% sub stripDate {
+%   my $a = substr shift, 0, 10;
+%   $a =~ s/\//-/g;
+%   return $a;
+% }
+
+% if ($success) {
+
+<table id="table" class="display" >
+    <thead>
+      <tr>
+        <td>Serial</td>
+        <td>Since</td>
+        <td>Issuer CN</td>
+        <td>Expire</td>
+        <td>Operation</td>
+      </tr>
+    </thead>
+    <tbody>
+
+% my $crlList = length $issuerId ? $self->app->ca->listCRL(issuerId => $issuerId) : $self->app->ca->listCRL;
+% foreach my $crl (@{$crlList}) {
+%   my $rowid = md5_sum $crl->{id};
+%   my $id = $crl->{id};
+%   $crl->{revokedate} = $crl->{revokedate} || '';
+
+    <tr id="<%= $rowid %>">
+        <td><%= $crl->{serial} %></button></td>
+        <td><%= stripDate $crl->{begindate} %></td>
+        <td><%= stripDN decode('utf-8', $crl->{issuer}) %></td>
+        <td><%= stripDate $crl->{expiredate} %></td>
+        <td>
+            <a id="button-show-<%= $rowid %>" class="no-frame hollow button">S</a>
+            <a id="button-download-<%= $rowid %>" class="no-frame hollow button">&#9660;</a>
+            <a id="button-delete-<%= $rowid %>" class="no-frame hollow button">&times;</a>
+        </td>
+    </tr>
+% }
+    </tbody>
+</table>
+
+% foreach my $crl (@{$crlList}) {
+%   my $rowid = md5_sum $crl->{id};
+%   my $id = $crl->{id};
+
+<script>
+$("#button-show-<%= $rowid %>").click(function() {
+    var request = 'crl-show-form';
+    var id = '<%= $id %>';
+    var rowid = '<%= $rowid %>';
+    $.post('/crls', { "request" : request,
+                      "rowid" : rowid,
+                      "id" : id 
+                    }, function(data) {
+        $('#top-hook').html(data);
+    });
+});
+
+$("#button-download-<%= $rowid %>").click(function() {
+    var request = 'crl-download-form';
+    var id = '<%= $id %>';
+    var rowid = '<%= $rowid %>';
+    $.post('/crls', { "request" : request,
+                      "rowid" : rowid,
+                      "id" : id 
+                    }, function(data) {
+        $('#crl-download-reveal').html(data);
+        $('#crl-download-reveal').foundation('open');
+    });
+});
+
+$("#button-delete-<%= $rowid %>").click(function() {
+    var request = 'crl-delete-form';
+    var id = '<%= $id %>';
+    var rowid = '<%= $rowid %>';
+    $.post('/crls', { "request" : request,
+                      "rowid" : rowid,
+                      "id" : id 
+                    }, function(data) {
+        $('#crl-delete-reveal').html(data);
+        $('#crl-delete-reveal').foundation('open');
+    });
+});
+</script>
+
+% }
+
+
+<script>
+$('#table').DataTable({
+        "lengthMenu": [[10, 25, 50, 100, 500 -1], [10, 25, 50, 100, 500, "All"]]
+});
+</script>
+
+% } else {
+<script>
+    $("#message-context").html('<%= $message  %>');
+    $("#message-window").foundation('open');
+</script>
+% }
+
+
+<!-- end of content -->

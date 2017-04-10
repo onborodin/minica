@@ -1,0 +1,109 @@
+% use Mojo::Util qw(md5_sum);
+% use Encode qw(decode encode);
+
+% sub _stripDN  {
+%     my $dn = shift;
+%     for my $n (split /\//, $dn) {
+%         my ($l, $r) = split /=/, $n;
+%         next unless $l;
+%         return $r if ($l =~ /CN/);
+%     }
+% }
+% sub _stripDate {
+%   my $a = substr shift, 0, 10;
+%   $a =~ s/\//-/g;
+%   return $a;
+% }
+
+% my $rowid;
+% my $certData;
+% if ($success) {
+%   #--- create rowid ---
+%   $rowid = md5_sum $id;
+%   $certData = @{$self->app->ca->listCert(id => $id)}[0];
+% }
+
+<script>
+% if ($success) {
+
+    (function() {
+        var rowid = '<%= $rowid %>';
+        var row = document.getElementById(rowid);
+        if (row) $('#table').dataTable().fnDeleteRow(row);
+        $('#table').DataTable().draw();
+    })();
+
+
+    (function() {
+        var c1 = '<span class="text alert"><%= sprintf("0x%X", $certData->{serial}) %></span>';
+        var c2 = '<span class="text alert"><%= _stripDate $certData->{begindate} %></span>';
+        var c3 = '<span class="text alert"><%= _stripDN decode('utf-8', $certData->{issuer}) %></span>';
+        var c4 = '<span class="text alert"><%= _stripDN decode('utf-8', $certData->{subject}) %></span>';
+        var c5 = '<span class="text alert"><%= _stripDate $certData->{expiredate} %></span>';
+        var c6 = '<span class="text alert"><%= _stripDate $certData->{revokedate} %></span>';
+        var c7 = '<a id="button-show-<%= $rowid %>" class="no-frame hollow button">S</a>';
+        c7 += ' <a id="button-unrevoke-<%= $rowid %>" class="no-frame hollow button warning">U</a>';
+        c7 += ' <a id="button-download-<%= $rowid %>" class="no-frame hollow button">&#9660;</a>';
+        c7 += ' <a id="button-delete-<%= $rowid %>" class="no-frame hollow button">&times;</a>';
+
+        var rowid = '<%= $rowid %>';
+        var rowIndex = $('#table').dataTable().fnAddData([ c1, c2, c3, c4, c5, c6, c7 ]);
+        var row = $('#table').dataTable().fnGetNodes(rowIndex);
+        $(row).attr('id', rowid);
+    })();
+
+    $("#button-show-<%= $rowid %>").click(function() {
+        var request = 'cert-show-form';
+        var id = '<%= $id %>';
+        var rowid = '<%= $rowid %>';
+        $.post('/certs', { "request" : request,
+                          "rowid" : rowid,
+                          "id" : id 
+                        }, function(data) {
+            $('#top-hook').html(data);
+        });
+    });
+    $("#button-unrevoke-<%= $rowid %>").click(function() {
+        var request = 'cert-unrevoke-form';
+        var id = '<%= $id %>';
+        var rowid = '<%= $rowid %>';
+        $.post('/certs', { "request" : request,
+                          "rowid" : rowid,
+                          "id" : id 
+                        }, function(data) {
+            $('#cert-unrevoke-reveal').html(data);
+            $('#cert-unrevoke-reveal').foundation('open');
+        });
+    });
+
+    $("#button-download-<%= $rowid %>").click(function() {
+        var request = 'cert-download-form';
+        var id = '<%= $id %>';
+        var rowid = '<%= $rowid %>';
+        $.post('/certs', { "request" : request,
+                          "rowid" : rowid,
+                          "id" : id 
+                        }, function(data) {
+            $('#cert-download-reveal').html(data);
+            $('#cert-download-reveal').foundation('open');
+        });
+    });
+
+    $("#button-delete-<%= $rowid %>").click(function() {
+        var request = 'cert-delete-form';
+        var id = '<%= $id %>';
+        var rowid = '<%= $rowid %>';
+        $.post('/certs', { "request" : request,
+                          "rowid" : rowid,
+                          "id" : id 
+                        }, function(data) {
+
+            $('#cert-delete-reveal').html(data);
+            $('#cert-delete-reveal').foundation('open');
+        });
+    });
+
+% }
+    $("#message-context").html('<%= $message  %>');
+    $("#message-window").foundation('open');
+</script>

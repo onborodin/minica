@@ -1,0 +1,11 @@
+<script>
+    $("#message-context").html('<%= $message %>');
+    $("#message-window").foundation('open');
+
+% if ($success) {
+    var rowid = '<%= $rowid %>';
+    var row = document.getElementById(rowid);
+    if (row) $('#table').dataTable().fnDeleteRow(row);
+    $('#table').DataTable().draw();
+% }
+</script>

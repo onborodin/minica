@@ -1,0 +1,263 @@
+#!@PERL@
+
+use strict;
+use warnings;
+use feature qw(say);
+
+#use lib '@APP_DATADIR@/lib';
+
+use Crypt::OpenSSL::Random;
+use Crypt::OpenSSL::RSA;
+use Crypt::OpenSSL::CA;
+use Crypt::OpenSSL::X509;
+use Config::Simple;
+use Mojo::File qw(path);
+use Mojo::Util qw(monkey_patch b64_encode b64_decode md5_sum getopt dumper sha1_sum);
+use DBI;
+
+
+sub readfile {
+    my $file = shift || '/dev/null';
+    my $h;
+    if (open($h, '<', $file)) {
+        my @out = <$h>;
+        return join '', @out;
+    } else {
+        return undef;
+    }
+}
+
+sub fromZulu {
+  my $date = shift;
+  return undef unless $date;
+  #20180226163341Z
+  #01234567890123
+  my $year = substr $date, 0, 4;
+  my $month = substr $date, 4, 2;
+  my $day = substr $date, 6, 2;
+  my $hour = substr $date, 8, 2;
+  my $min = substr $date, 10, 2;
+  my $sec = substr $date, 12, 2;
+
+  return "$year/$month/$day $hour:$min:$sec";
+}
+
+sub help {
+    print qq(
+Usage: app [OPTIONS]
+
+Options
+    -h | --help           This help
+    -c | --cert=file
+    -k | --key=file
+    -p | --password=password    Password for decrypt imported private key
+    -i | --ipassword=password   Issuer private key password in storage
+         --verifyenc
+    )."\n";
+    exit 0;
+}
+
+help unless scalar @ARGV;
+
+getopt
+    'h|help' => \my $help,
+    'c|cert=s' => \my $certfile,
+    'k|key=s' => \my $keyfile,
+    'p|password=s' => \my $password,
+    'verify' => \my $verify,
+    'i|ipassword=s' => \my $ipassword;
+
+help if $help;
+
+
+my $key = readfile($keyfile);
+do { print "Connot read key file $keyfile\n"; exit 1; } unless $key;
+
+my $rsa;
+eval { 
+    $rsa = Crypt::OpenSSL::RSA->new_private_key($key, $password); 
+};
+
+do { print "Cannot parse or decrypt private key from $keyfile\n"; exit 1;} if $@;
+
+#$rsa->get_private_key_string;
+
+my $cert = readfile($certfile);
+do { print "Connot read certificate file $certfile\n"; exit 1; } unless $cert;
+
+
+my $x509;
+eval {
+    $x509 = Crypt::OpenSSL::CA::X509->parse($cert);
+};
+do { print "Cannot parse certificate file $certfile\n"; exit 1; } if $@;
+
+# --- it is self-signed this certificate? ---
+my $pubkey = $x509->get_public_key;
+eval {
+        $x509->verify($pubkey);
+};
+do {print "Certificate $certfile is self-signed\n"; exit 1; } unless $@;
+
+
+do {print "Cerificate $certfile have X509v3 Basic Constraints CA = true\n"; exit 1; } if $x509->dump =~ m/CA:TRUE/;
+
+# --- this key and cert is pair? ---
+do {print "Certificate $certfile and key file $keyfile is not pair\n"; exit 1; }
+    unless md5_sum($rsa->get_public_key_x509_string) eq md5_sum($x509->get_public_key->to_PEM);
+
+
+my $x5 = Crypt::OpenSSL::X509->new_from_string($cert);
+#2.5.29.14 X509v3 Subject Key Identifier:
+#2.5.29.15 X509v3 Key Usage:
+#2.5.29.19 X509v3 Basic Constraints:
+#2.5.29.35 X509v3 Authority Key Identifier:
+
+##print "Cert has Basic Constraints info\n" if $x5->has_extension_oid('2.5.29.19');
+##print "Cert has Authority Key Identifier info\n" if $x5->has_extension_oid('2.5.29.35');
+
+#$x5->extensions_by_oid()->{'2.5.29.35'}->auth_att;
+
+my $subject = $x509->get_subject_DN->to_string;
+my $issuer = $x509->get_issuer_DN->to_string;
+
+# ---------------------------
+# --- read configureation ---
+# ---------------------------
+my $cfgfile = "@APP_SYSCONF@";
+
+my $cfg = Config::Simple->new;
+$cfg->syntax('simple');
+$cfg->read($cfgfile);
+
+my $db_driver = $cfg->param('db_driver') || 'SQLite';
+my $db_host = $cfg->param('db_host') || '';
+my $db_port = $cfg->param('db_port') || '';
+my $db_name = $cfg->param('db_name') || '@APP_DBDIR@/@PACKAGE@.db';
+
+my $dsn = "DBI:$db_driver:database=$db_name;host=$db_host;port=$db_port";
+my $db_username = $cfg->param('db_username')  || '';
+my $db_password = $cfg->param('db_password') || '';
+
+
+# ----------------------
+# --- search ca cert ---
+# ----------------------
+
+my $db = DBI->connect($dsn, $db_username, $db_password);
+my $select = "select id, subject, cert, key from cacert where subject = '$issuer'";
+
+my $sth = $db->prepare($select);
+my $rows = $sth->execute;
+do { print "Cannot found CA for certificate $certfile\n"; exit 1; } if $rows*1;
+
+my $issuer_enckey = undef;
+my $issuer_id = undef;
+my $issuer_pubkey = undef;
+
+while (my $row = $sth->fetchrow_hashref) {
+    my $ca_cert = b64_decode($row->{cert});
+
+    my $ca_x509 = Crypt::OpenSSL::CA::X509->parse($ca_cert);
+    my $ca_pubkey = $ca_x509->get_public_key;
+    eval { 
+        $x509->verify($ca_pubkey);
+    };
+    do {
+        $issuer_id = $ca_x509->get_serial.'::'.$ca_pubkey->get_openssl_keyid;
+        $issuer_pubkey = $ca_pubkey->to_PEM;
+        $issuer_enckey = b64_decode($row->{key});
+        last; } 
+    unless $@;
+}
+$sth->finish;
+$db->disconnect;
+
+do { print "Cannot found valid CA certificate;\n"; exit 1; } unless $issuer_id;
+
+
+my $issuer_rsa;
+eval { 
+    $issuer_rsa = Crypt::OpenSSL::RSA->new_private_key($issuer_enckey, $ipassword); 
+};
+do { print "Cannot parse or decrypt issuer private key\n"; exit 1;}  if $@;
+
+my $issuer_rsa_pub = Crypt::OpenSSL::RSA->new_public_key($issuer_pubkey);
+
+$key = $rsa->get_private_key_string;
+
+#--------------------------------------------
+#--- crypt private key with secret ----------
+#--------------------------------------------
+
+use Crypt::CBC;
+
+my $alg = 'Crypt::OpenSSL::AES';
+my $secret = md5_sum(localtime(time));
+my $cipher = Crypt::CBC->new({
+      key    => $secret,
+      cipher => $alg,
+      keylength => '256'
+});
+
+my $enc_key = b64_encode($cipher->encrypt($key), '');
+my $enc_secret = b64_encode($issuer_rsa_pub->encrypt($secret), '');
+
+#--------------------------------
+#--- verivy encoding ------------
+#--------------------------------
+
+
+if ($verify) {
+    #--- decrypt secret with private key ---
+    my $decsecret = $issuer_rsa->decrypt(b64_decode($enc_secret));
+    my $deccipher = Crypt::CBC->new({
+        key    => $decsecret,
+        cipher => $alg,
+        keylength => '256'
+    });
+    #--- decrypt user private key with secret ---
+    my $deckey = $deccipher->decrypt(b64_decode($enc_key))."\n";
+
+    #--- normalize private key ---
+    eval {
+        $deckey = Crypt::OpenSSL::RSA->new_private_key($deckey)->get_private_key_string;
+    };
+
+    #print $key. "\n";
+    #print $deckey. "\n";
+
+    do { print "Decrypt verification incorrect =(\n"; exit 1; } unless ($key eq $deckey);
+}
+
+#--------------------------------
+#--- collect data ---------------
+#--------------------------------
+
+$cert = b64_encode($x5->as_string, '');
+
+my $id = $x509->get_serial.'::'.$x509->get_public_key->get_openssl_keyid;
+my $begindate = fromZulu($x509->get_notBefore);
+my $expiredate = fromZulu($x509->get_notAfter);
+my $serial = hex($x509->get_serial);
+
+
+$db = DBI->connect($dsn, $db_username, $db_password);
+my $query = "insert into cert (id, issuer_id, serial, subject, begindate, expiredate, cert, secret, key)
+                      values ('$id',
+                              '$issuer_id',
+                              '$serial',
+                              '$subject',
+                              '$begindate',
+                              '$expiredate',
+                              '$cert',
+                              '$enc_secret',
+                              '$enc_key');";
+
+$rows = $db->do($query);
+$db->disconnect;
+
+print "Certificate $subject import done\n";
+
+#EOF
+

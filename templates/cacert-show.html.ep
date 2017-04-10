@@ -1,0 +1,31 @@
+
+% if ($success) {
+
+% my $cert = $self->app->ca->getCACert($id);
+% my $subj = $self->app->ca->subject($cert);
+
+<div id="cacert-show-div">
+<div class="callout secondary fixed">
+    <h5>Certificate <%= $subj %></h5>
+    <p class="text-left">
+        <pre>
+%= $self->app->ca->dumpCert($cert)
+%= $cert
+        </pre>
+    </p>
+</div>
+<p class="text-center">
+    <button type="button" class="button" data-close="cacert-show-reveal">Close</button>
+</p>
+<button type="button" class="close-button" data-close="cacert-show-reveal">&times;</button>
+
+<script>
+$('#cacert-show-div').foundation();
+</script>
+
+% } else {
+<script>
+    $("#message-context").html('<%= $message  %>');
+    $("#message-window").foundation('open');
+</script>
+% }
