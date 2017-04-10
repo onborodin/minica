@@ -6,7 +6,7 @@ pidfile = @APP_PIDFILE@
 logfile = @APP_LOGFILE@
 pwdfile = @APP_PWDFILE@
 
-db_driver = SQLite
+db_driver = SQLite 
 db_name = @APP_DBDIR@/@PACKAGE@.db
 #db_host = localhost
 #db_username = ziggi

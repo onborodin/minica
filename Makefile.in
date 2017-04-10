@@ -56,7 +56,7 @@ DIST_COMMON = $(am__configure_deps) $(nobase_dist_database_DATA) \
 	$(nobase_dist_pkgdata_DATA) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/minica-cacert-import.in \
 	$(srcdir)/minica-cert-import.in \
-	$(srcdir)/minica.conf.sample.in $(srcdir)/minica.in \
+	$(srcdir)/minica.conf.example.in $(srcdir)/minica.in \
 	$(top_srcdir)/configure $(top_srcdir)/lib/MiniCA.pm.in \
 	$(top_srcdir)/rc.d/minica.in config.guess config.sub \
 	install-sh missing
@@ -68,7 +68,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
-CONFIG_CLEAN_FILES = minica.conf.sample minica rc.d/minica \
+CONFIG_CLEAN_FILES = minica.conf.example minica rc.d/minica \
 	lib/MiniCA.pm minica-cacert-import minica-cert-import
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -234,17 +234,13 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign no-dependencies no-installinfo
 sbin_SCRIPTS = minica minica-cacert-import minica-cert-import
 databasedir = @APP_DBDIR@
-nobase_dist_database_DATA = minica.db.sample minica.pw.sample minica.sql
+nobase_dist_database_DATA = minica.db.example minica.pw.example minica-schema.sql minica.sql.example
 confdir = @APP_SYSCONFDIR@
-nobase_conf_DATA = minica.conf.sample
+nobase_conf_DATA = minica.conf.example
 etcdir = /usr/local/etc
 @FREEBSD_OS_TRUE@nobase_etc_SCRIPTS = rc.d/minica
 EXTRA_DIST = \
-	LICENSE \
-	minica.pw.sample \
-	minica.db.sample \
-	minica.sql \
-	minica.8
+	LICENSE
 
 nobase_dist_pkgdata_DATA = \
 	public/favicon.png \
@@ -408,7 +404,7 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	$(am__cd) $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 $(am__aclocal_m4_deps):
-minica.conf.sample: $(top_builddir)/config.status $(srcdir)/minica.conf.sample.in
+minica.conf.example: $(top_builddir)/config.status $(srcdir)/minica.conf.example.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 minica: $(top_builddir)/config.status $(srcdir)/minica.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@

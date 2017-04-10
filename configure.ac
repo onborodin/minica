@@ -200,7 +200,7 @@ Encode
 MIME::QuotedPrint
 ])
 
-AC_CONFIG_FILES([minica.conf.sample])
+AC_CONFIG_FILES([minica.conf.example])
 
 AC_OUTPUT([Makefile minica rc.d/minica lib/MiniCA.pm minica-cacert-import minica-cert-import])
 dnl EOF
