@@ -6,23 +6,10 @@ AUTOMAKE_OPTIONS = foreign no-dependencies no-installinfo
 sbin_SCRIPTS = minica minica-cacert-import minica-cert-import
 
 databasedir = @APP_DBDIR@
-nobase_dist_database_DATA = minica.db.sample minica.pw.sample  minica.sql.sample
+nobase_dist_database_DATA = minica.db.sample minica.pw.sample minica.sql
 
 confdir = @APP_SYSCONFDIR@
 nobase_conf_DATA = minica.conf.sample
-
-
-#minica.db.sample: minica.db
-#	cp minica.db minica.db.sample
-
-#minica.pw.sample: minica.pw
-#	cp minica.pw minica.pw.sample
-
-#minica.sql.sample: minica.sql
-#	cp minica.sql minica.sql.sample
-
-#minica.conf.sample: minica.conf
-#	cp minica.conf minica.conf.sample
 
 etcdir = /usr/local/etc
 
@@ -98,10 +85,10 @@ nobase_dist_pkgdata_DATA = \
 	templates/not_found.html.ep \
 	templates/exception.html.ep \
 	\
-	lib/MicroCA.pm \
-	lib/MicroCA/Controller/Main.pm \
-	lib/MicroCA/Model/Users.pm \
-	lib/MicroCA/Model/CA.pm \
+	lib/MiniCA.pm \
+	lib/MiniCA/Controller/Main.pm \
+	lib/MiniCA/Model/Users.pm \
+	lib/MiniCA/Model/CA.pm \
 	lib/Mojolicious/Plugin/RenderFile.pm \
 	\
 	templates/cacert-list.html.ep \
@@ -174,27 +161,10 @@ endif
 	  chmod 0640 $(DESTDIR)$(APP_DBDIR)/$$data; \
 	done
 
-
 man_MANS = minica.8
 
 minica.8: minica
 	pod2man minica > minica.8
-
-#minica: minica.pl
-#	cp minica.pl minica
-#	chmod a+x minica
-
-#minica.db: minica.sql
-#	sqlite3 minica.db < minica.sql
-#	chmod go-rw minica
-
-#minica-cert-import: minica-cert-import.pl
-#	cp minica-cert-import.pl minica-cert-import
-#	chmod a+x minica-cert-import
-
-#minica-cacert-import: minica-cacert-import.pl
-#	cp minica-cacert-import.pl minica-cacert-import
-#	chmod a+x minica-cacert-import
 
 clean:
 	rm -f minica *~ */*~ */*/*~ */*/*/*~
