@@ -292,7 +292,6 @@ nobase_dist_pkgdata_DATA = \
 	public/images/sort_asc.png \
 	\
 	public/muppetshow.jpg \
-	public/muppetshow2.jpg \
 	\
 	templates/login.html.ep \
 	templates/layouts/login.html.ep \
