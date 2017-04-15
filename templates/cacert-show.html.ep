@@ -32,3 +32,4 @@ $('#cacert-show-div').foundation();
     $("#message-window").foundation('open');
 </script>
 % }
+%#EOF

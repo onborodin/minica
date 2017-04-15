@@ -48,4 +48,4 @@
     <button id="message-button" class="button" data-close>Close</button>
     <button class="close-button" data-close>&times;</button>
 
-% }
+% }%#EOF

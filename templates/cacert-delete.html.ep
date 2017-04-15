@@ -16,3 +16,4 @@
     $("#message-window").foundation('open');
 
 </script>
+%#EOF

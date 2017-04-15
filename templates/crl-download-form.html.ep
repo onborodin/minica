@@ -34,3 +34,4 @@ $('#crl-download-form').foundation();
     <button class="close-button" data-close>&times;</button>
 
 % }
+%#EOF
