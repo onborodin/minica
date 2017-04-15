@@ -7,17 +7,11 @@
 
 package MiniCA::Model::Users;
 
-
 use strict;
 use warnings;
 use utf8;
 use Encode qw(encode decode);
-
-use open qw/:std :utf8/;
 use Mojo::Util qw(b64_decode);
-
-binmode(STDOUT,':utf8');
-
 
 sub new {
     my ($class, $app, $pwFile) = @_;
@@ -29,19 +23,12 @@ sub new {
     return $self;
 }
 
-sub hello {
-    my $self = shift;
-    return 'Hello!';
-}
-
 sub app {
-    my $self = shift;
-    return $self->{app};
+    return shift->{app};
 }
 
 sub masterUser {
-    my $self = shift;
-    return $self->{masterUser};
+    return shift->{masterUser};
 }
 
 sub pwFile {
@@ -51,8 +38,7 @@ sub pwFile {
 }
 
 sub newHT {
-    my $self = shift;
-    my $passwd_file = $self->pwFile;
+    my $passwd_file = shift->pwFile;
     return Apache::Htpasswd->new($passwd_file);
 }
 
@@ -112,7 +98,5 @@ sub list {
     return $ht->fetchUsers;
 }
 
-
 1;
-
 #EOF

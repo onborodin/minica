@@ -60,7 +60,7 @@ sub logout {
 sub decodeBasicAuth {
     my ($self, $headers) = @_;
 
-    my $authStr = $headers->authorization; # 'Basic Og==';
+    my $authStr = $headers->authorization;
     return (undef, undef) unless $authStr;
     my ($authType, $encAuthPair) = split / /, $authStr;
     return (undef, undef) unless ($authType eq 'Basic' && $encAuthPair);
@@ -92,8 +92,10 @@ sub userList {
 
     my $message = '';
     my $mLevel = 'primary';
+
 #    $self->cache_control->five_minutes;
 #    $self->res->headers->cache_control('public, max-age=300');
+
     $self->res->headers->cache_control('private, max-age=0, no-cache');
     $self->render(template => 'user-list', message => $message, mLevel => $mLevel);
 }
@@ -403,8 +405,6 @@ sub cacertCreate {
             CN =>   $self->req->param('common_name')
         );
     } if $valid;
-    # --- get from database for checking ---
-    #my $listCACert = @{$self->app->ca->listCACert($id)}[0];
 
     $self->render(template => 'cacert-create',
                     message => $message,
@@ -696,7 +696,6 @@ sub verifyCAKeyPassword {
 #--- LEAF CERTS ------------------------------
 #---------------------------------------------
 
-# ---- get(/certs) handler ----
 sub certListForm {
     my $self = shift;
 
@@ -861,8 +860,6 @@ sub certCreate {
             keysize =>    $self->req->param('key_size'),
         );
     } if $valid;
-    # --- get from database for checking ---
-    #my $listCACert = @{$self->app->ca->listCACert($id)}[0];
 
     $self->render(template => 'cert-create',
                     message => $message,
@@ -1179,7 +1176,6 @@ sub crlDelete {
     my $rowid = $self->req->param('rowid');
 
     my $issuer_id = $self->app->ca->getCRLIssuerId($id);
-#    my $subject = $self->app->ca->getCRLSubject($id);
 
     my $valid = 1;
     my $message = 'CRL deleted';
@@ -1229,10 +1225,7 @@ sub crlDownload {
 
 sub hello {
     my $self = shift;
-#    $self->render(text => 'Hello');
-    my $crlId = $self->app->ca->createCRL( issuerId => '0x01::90:70:6C:DE:86:CA:2B:AF:AB:2B:4D:0F:C3:E6:43:4D:6F:AC:4D:75', password => '1234567');
-    my $crlData = @{$self->app->ca->listCRL(id => $crlId)}[0];
-    $self->render(text => dumper $crlData);
+    $self->render(text => 'Hello');
 }
 
 sub wshello {
@@ -1249,7 +1242,6 @@ sub authError {
     $self->res->code(401);
     $self->render(text => 'Auth Error');
 }
-
 
 sub postError {
     my $self = shift;
