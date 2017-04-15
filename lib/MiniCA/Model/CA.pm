@@ -7,8 +7,6 @@
 package MiniCA::Model::CA;
 
 use utf8;
-use open qw/:std :utf8/;
-
 use MIME::QuotedPrint qw(encode_qp decode_qp);
 use Crypt::OpenSSL::Random;
 use Crypt::OpenSSL::RSA;
@@ -23,9 +21,6 @@ use Mojo::JSON qw(encode_json decode_json);
 
 use Encode qw(decode encode decode_utf8 encode_utf8);
 use MIME::QuotedPrint qw(encode_qp decode_qp);
-
-binmode(STDOUT,':utf8');
-
 
 #------------------------------------------
 #--- Utils ----- --------------------------
@@ -59,31 +54,24 @@ sub new {
 #----------------------------------------
 
 sub app {
-    my $self = shift;
-    return $self->{app};
+    return shift->{app};
 }
 
 sub dsn {
-    my $self = shift;
-    return $self->{dsn};
+    return shift->{dsn};
 }
 
 sub username {
-    my $self = shift;
-    return $self->{username};
+    return shift->{username};
 }
 
 sub password {
-    my $self = shift;
-    return $self->{password};
+    return shift->{password};
 }
-
-
 
 #-----------------------------------------
 #--- UTILS -------------------------------
 #-----------------------------------------
-
 
 sub zuluTime {
     my ($self, $dayShift) = @_;
@@ -280,8 +268,10 @@ sub createCACert {
 
     #--- encrypt private key ---
     my $key = $newRSA->get_private_key_string($password, $cipherType);
+
     #--- self sign cerificate ---
     my $cert = $new_x509->sign($new_privkey, $digestType);
+
     #--- insert the pair to db storage ---
     my $id = $self->insertCACert($cert, $key);
     return (undef, 'Storage error') unless $id;
@@ -317,6 +307,7 @@ sub importCACert {
 
     #--- normalise certificate ---
     my $outcert = Crypt::OpenSSL::X509->new_from_string($cert)->as_string;
+
     #---  (re)encrypt private key to PKSC#5 ---
     my $outkey = $rsa->get_private_key_string($password, $cipher);
 
@@ -452,7 +443,7 @@ sub unrevokeCACert {
 
 
 #-----------------------------------------
-#--- LEAF CERT methods ---------------------
+#--- LEAF CERT methods -------------------
 #-----------------------------------------
 
 sub getNextCertSerial {
@@ -529,7 +520,8 @@ sub createCert {
     # --- get issuer id for extension ---
     $new_x509->set_extension('authorityKeyIdentifier', 
             { keyid => $issuerX509->get_public_key->get_openssl_keyid });
-#    $new_x509->set_extension('keyUsage', 'digitalSignature,keyCertSign,cRLSign', -critical => 1);
+
+    $new_x509->set_extension('keyUsage', 'digitalSignature,keyCertSign,cRLSign', -critical => 0);
 
     $new_x509->set_notBefore($self->zuluTime);
     $new_x509->set_notAfter($self->zuluTime($lifeTime));
@@ -539,6 +531,7 @@ sub createCert {
     $new_x509->set_serial($serial);
 
     my $key = $newRSA->get_private_key_string;
+
     #-------------
     #--- sign  ---
     #-------------
@@ -676,7 +669,7 @@ sub getKey {
         $issuerRSA = Crypt::OpenSSL::RSA->new_private_key($issuerKeyPem, $password); 
     };
     return undef if $@;
-    
+
     my $dec_secret = $issuerRSA->decrypt(b64_decode($enc_secret));
 
     my $alg = 'Crypt::OpenSSL::AES';
@@ -754,7 +747,7 @@ sub unrevokeCert {
 }
 
 #---------------------------------------------
-#--- CRL ------------------------------------
+#--- CRL -------------------------------------
 #---------------------------------------------
 
 sub getNextCRLSerial {
@@ -776,9 +769,11 @@ sub createCRL {
     my %param = @_;
 
     my $issuerId = $param{issuerId};
-    my $lifeTime = $param{lifeTime} || '365';
+    my $lifeTime = $param{lifeTime} || '3650';
     my $digestType = $param{digestType} || 'sha256';
     my $password = $param{password} || '';
+
+    return undef unless length $issuerId;
 
     $pemCert = $self->getCACert($issuerId);
     $pemKey = $self->getCAKey($issuerId);
@@ -810,7 +805,12 @@ sub createCRL {
         }
     }
 
-    my $key = Crypt::OpenSSL::CA::PrivateKey->parse($pemKey, -password => $password);
+    my $key;
+    eval {
+        $key  = Crypt::OpenSSL::CA::PrivateKey->parse($pemKey, -password => $password);
+    };
+    return undef if $@;
+
     my $crlpem = $crl->sign($key, $digestType), '';
 
     my $id = $serial.'::'.md5_sum $crlpem;
