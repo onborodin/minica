@@ -93,7 +93,6 @@ $('#crl-create-form').on('formvalid.zf.abide', function(event) {
 <script>
 $("#crl-download-reveal").draggable();
 $("#crl-delete-reveal").draggable();
-$("#crl-show-reveal").draggable();
 </script>
 
 <div class="text-right">
