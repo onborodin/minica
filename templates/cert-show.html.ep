@@ -1,3 +1,6 @@
+%#
+%# $Id$
+%#
 % my $cert = $self->app->ca->getCert($id);
 % my $subj = $self->app->ca->subject($cert);
 

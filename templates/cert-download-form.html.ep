@@ -1,3 +1,6 @@
+%#
+%# $Id$
+%#
 % if ($success) {
 
 <form accept-charset="UTF-8" id="cert-download-form" action="/certs" method="post" target="_blank" data-abide novalidate>
