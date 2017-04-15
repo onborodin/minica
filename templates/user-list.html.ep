@@ -3,7 +3,7 @@
 %#
 <!-- begin of content -->
 % layout 'default';
-% title 'MicroCA';
+% title 'MiniCA';
 % use Mojo::Util qw(md5_sum);
 % use Encode qw(encode decode);
 

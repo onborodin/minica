@@ -2,7 +2,7 @@
 %# $Id$
 %#
 % layout 'default';
-% title 'MicroCA';
+% title 'MiniCA';
 % use Encode qw(decode encode);
 
 

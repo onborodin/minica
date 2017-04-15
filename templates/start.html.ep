@@ -2,7 +2,7 @@
 %# $Id$
 %#
 % layout 'default';
-% title 'MicroCA';
+% title 'MiniCA';
 
 <div class="text-center">
 <img class="thumbnail" src="/muppetshow.jpg">
