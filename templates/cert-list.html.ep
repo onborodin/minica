@@ -151,3 +151,4 @@ $('#table').DataTable({
 % }
 
 <!-- end of content -->
+%#EOF

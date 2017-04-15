@@ -11,4 +11,4 @@
     if (row) $('#table').dataTable().fnDeleteRow(row);
     $('#table').DataTable().draw();
 % }
-</script>
+</script>%#EOF

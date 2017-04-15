@@ -51,3 +51,4 @@ $('#cert-revoke-form').on('formvalid.zf.abide', function(event) {
     <button class="close-button" data-close>&times;</button>
 
 % }
+%#EOF

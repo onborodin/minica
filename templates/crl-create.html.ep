@@ -89,3 +89,4 @@
     $("#message-context").html('<%= $message  %>');
     $("#message-window").foundation('open');
 </script>
+%#EOF
