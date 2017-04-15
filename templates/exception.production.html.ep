@@ -1,0 +1,14 @@
+%#
+%# $Id: exception.html.ep 627 2017-04-15 13:02:08Z ziggi $
+%#
+% layout 'default';
+% title 'MicroAPP Error';
+
+<h3>Exception</h3>
+
+<pre>  
+%= $exception
+</pre>
+
+
+%#EOF
