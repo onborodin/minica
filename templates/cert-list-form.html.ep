@@ -161,7 +161,6 @@ $("#cert-revoke-reveal").draggable();
 $("#cert-unrevoke-reveal").draggable();
 $("#cert-download-reveal").draggable();
 $("#cert-delete-reveal").draggable();
-%# $("#cert-show-reveal").draggable();
 </script>
 
 <div id="cert-create"><!-- empty --></div>

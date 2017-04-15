@@ -196,9 +196,6 @@ $("#cacert-revoke-reveal").draggable();
 $("#cacert-unrevoke-reveal").draggable();
 $("#cacert-download-reveal").draggable();
 $("#cacert-delete-reveal").draggable();
-
-%#$("#cacert-show-reveal").draggable();
-
 </script>
 
 <div id="cacert-create"><!-- empty --></div>
