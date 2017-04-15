@@ -27,7 +27,7 @@
         <td>Serial</td>
         <td>Since</td>
         <td>Issuer CN</td>
-        <td>Expire</td>
+        <td>Expires</td>
         <td>Operation</td>
       </tr>
     </thead>
