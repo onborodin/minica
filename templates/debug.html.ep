@@ -1,8 +1,0 @@
-%#
-%# $Id$
-%#
-% layout 'default';
-% title 'MicroCA';
-
-<%= $message %>
-%#EOF
