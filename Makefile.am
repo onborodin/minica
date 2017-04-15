@@ -70,15 +70,12 @@ nobase_dist_pkgdata_DATA = \
 	public/images/sort_asc.png \
 	\
 	public/muppetshow.jpg \
-	public/muppetshow2.jpg \
 	\
 	templates/login.html.ep \
 	templates/layouts/login.html.ep \
 	templates/layouts/default.html.ep \
 	templates/start.html.ep \
 	\
-	templates/not_found.html.ep \
-	templates/exception.html.ep \
 	templates/exception.development.html.ep \
 	templates/not_found.development.html.ep \
 	templates/exception.production.html.ep \
