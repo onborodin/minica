@@ -2,7 +2,7 @@
 %# $Id: not_found.html.ep 627 2017-04-15 13:02:08Z ziggi $
 %#
 % layout 'default';
-% title 'MicroCA 404';
+% title 'MiniCA 404';
 
 <h3>Page not found</h3>
 

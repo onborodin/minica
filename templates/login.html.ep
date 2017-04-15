@@ -2,7 +2,7 @@
 %# $Id$
 %#
 % layout 'login';
-% title 'MicroCA Login';
+% title 'MiniCA Login';
 
 <!- begin login form -->
     <div class="row">&nbsp;</div>
