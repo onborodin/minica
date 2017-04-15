@@ -1,3 +1,6 @@
+%#
+%# $Id$
+%#
 % if ($success) {
 <form accept-charset="UTF-8" id="cacert-delete-form" action="/cacerts" method="post" data-abide novalidate>
     <div class="row">&nbsp;</div>

@@ -1,3 +1,6 @@
+%#
+%# $Id$
+%#
 % layout 'default';
 % title 'MicroCA CA';
 % use Mojo::Util qw(b64_encode b64_decode md5_sum dumper);

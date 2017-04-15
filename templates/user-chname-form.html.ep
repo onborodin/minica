@@ -1,3 +1,6 @@
+%#
+%# $Id$
+%#
 % if ($success) {
 
 <form accept-charset="UTF-8" id="user-chname-form" action="/users" method="post" data-abide novalidate>

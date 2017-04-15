@@ -1,3 +1,6 @@
+%#
+%# $Id$
+%#
 % if ($success) {
 <form accept-charset="UTF-8" id="cacert-download-form" action="/cacerts" method="post" target="_blank">
     <div class="row">&nbsp;</div>

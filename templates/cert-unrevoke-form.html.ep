@@ -1,3 +1,6 @@
+%#
+%# $Id$
+%#
 % if ($success) {
 
 <form accept-charset="UTF-8" id="cert-unrevoke-form" action="/certs" method="post" data-abide novalidate>
