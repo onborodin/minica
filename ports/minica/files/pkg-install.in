@@ -1,0 +1,34 @@
+#!/bin/sh
+
+case $2 in 
+    PRE-INSTALL)
+
+	MINICA_GROUP="%%MINICA_GROUP%%"
+	MINICA_OWNER="%%MINICA_OWNER%%"
+	MINICA_GROUP_ID="%%MINICA_GROUP_ID%%"
+	MINICA_OWNER_ID="%%MINICA_OWNER_ID%%"
+
+	PKG_PREFIX="%%PREFIX%%"
+	MINICA_RUNDIR="%%MINICA_RUNDIR%%"
+	MINICA_LOGDIR="%%MINICA_LOGDIR%%"
+	MINICA_DBDIR="%%MINICA_DBDIR%%"
+
+	MINICA_NAME="MiniCA"
+	MINICA_SHELL="/usr/sbin/nologin"
+
+	pw group add ${MINICA_GROUP}  -g ${MINICA_GROUP_ID}
+	pw user add ${MINICA_OWNER} -u ${MINICA_OWNER_ID} \
+	    -g ${MINICA_GROUP}  \
+	    -d ${PKG_PREFIX} \
+	    -s "${MINICA_SHELL}" -u ${MINICA_OWNER_ID} \
+	    -c "${MINICA_NAME}"
+	pw group mod ${MINICA_GROUP} -M ${MINICA_OWNER}
+	install -d -o ${MINICA_OWNER} -g ${MINICA_GROUP} -m 0750 ${MINICA_LOGDIR}
+	install -d -o ${MINICA_OWNER} -g ${MINICA_GROUP} -m 0750 ${MINICA_RUNDIR}
+	install -d -o ${MINICA_OWNER} -g ${MINICA_GROUP} -m 0750 ${MINICA_DBDIR}
+	;;
+    POST-INSTALL)
+	;;
+esac
+exit 0
+#EOF

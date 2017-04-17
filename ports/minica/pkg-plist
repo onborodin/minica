@@ -1,0 +1,131 @@
+etc/rc.d/minica
+man/man8/minica.8.gz
+sbin/minica
+sbin/minica-cacert-import
+sbin/minica-cert-import
+share/minica/lib/MiniCA.pm
+share/minica/lib/MiniCA/Controller/Main.pm
+share/minica/lib/MiniCA/Model/CA.pm
+share/minica/lib/MiniCA/Model/Users.pm
+share/minica/lib/Mojolicious/Plugin/RenderFile.pm
+share/minica/public/css/app.css
+share/minica/public/css/autoFill.dataTables.css
+share/minica/public/css/autoFill.dataTables.min.css
+share/minica/public/css/autoFill.foundation.css
+share/minica/public/css/autoFill.foundation.min.css
+share/minica/public/css/colReorder.dataTables.css
+share/minica/public/css/colReorder.dataTables.min.css
+share/minica/public/css/colReorder.foundation.css
+share/minica/public/css/colReorder.foundation.min.css
+share/minica/public/css/dataTables.foundation.css
+share/minica/public/css/dataTables.foundation.min.css
+share/minica/public/css/fixedHeader.dataTables.css
+share/minica/public/css/fixedHeader.dataTables.min.css
+share/minica/public/css/fixedHeader.foundation.css
+share/minica/public/css/fixedHeader.foundation.min.css
+share/minica/public/css/foundation.css
+share/minica/public/css/foundation.min.css
+share/minica/public/css/jquery.dataTables.css
+share/minica/public/css/jquery.dataTables.min.css
+share/minica/public/docs/minica-lifecicle1.svg
+share/minica/public/docs/minica-lifecicle2.svg
+share/minica/public/favicon.ico
+share/minica/public/favicon.png
+share/minica/public/images/sort_asc_disabled.png
+share/minica/public/images/sort_asc.png
+share/minica/public/images/sort_both.png
+share/minica/public/images/sort_desc_disabled.png
+share/minica/public/images/sort_desc.png
+share/minica/public/jquery-ui/jquery-ui.css
+share/minica/public/jquery-ui/jquery-ui.js
+share/minica/public/jquery-ui/jquery-ui.min.css
+share/minica/public/jquery-ui/jquery-ui.min.js
+share/minica/public/jquery-ui/jquery-ui.structure.css
+share/minica/public/jquery-ui/jquery-ui.structure.min.css
+share/minica/public/jquery-ui/jquery-ui.theme.css
+share/minica/public/jquery-ui/jquery-ui.theme.min.css
+share/minica/public/js/app.js
+share/minica/public/js/autoFill.foundation.js
+share/minica/public/js/autoFill.foundation.min.js
+share/minica/public/js/dataTables.autoFill.js
+share/minica/public/js/dataTables.autoFill.min.js
+share/minica/public/js/dataTables.colReorder.js
+share/minica/public/js/dataTables.colReorder.min.js
+share/minica/public/js/dataTables.fixedHeader.js
+share/minica/public/js/dataTables.fixedHeader.min.js
+share/minica/public/js/dataTables.foundation.js
+share/minica/public/js/dataTables.foundation.min.js
+share/minica/public/js/foundation.js
+share/minica/public/js/foundation.js.orig
+share/minica/public/js/foundation.min.js
+share/minica/public/js/jquery.dataTables.js
+share/minica/public/js/jquery.dataTables.min.js
+share/minica/public/js/jquery.js
+share/minica/public/js/jquery.min.js
+share/minica/public/js/jquery.simplePagination.js
+share/minica/public/js/what-input.js
+share/minica/public/js/what-input.min.js
+share/minica/public/muppetshow.jpg
+share/minica/templates/cacert-create.html.ep
+share/minica/templates/cacert-delete-form.html.ep
+share/minica/templates/cacert-delete.html.ep
+share/minica/templates/cacert-download-form.html.ep
+share/minica/templates/cacert-list.html.ep
+share/minica/templates/cacert-revoke-form.html.ep
+share/minica/templates/cacert-revoke.html.ep
+share/minica/templates/cacert-show-form.html.ep
+share/minica/templates/cacert-show.html.ep
+share/minica/templates/cacert-unrevoke-form.html.ep
+share/minica/templates/cacert-unrevoke.html.ep
+share/minica/templates/cert-create.html.ep
+share/minica/templates/cert-delete-form.html.ep
+share/minica/templates/cert-delete.html.ep
+share/minica/templates/cert-download-form.html.ep
+share/minica/templates/cert-list-form.html.ep
+share/minica/templates/cert-list.html.ep
+share/minica/templates/cert-revoke-form.html.ep
+share/minica/templates/cert-revoke.html.ep
+share/minica/templates/cert-show-form.html.ep
+share/minica/templates/cert-show.html.ep
+share/minica/templates/cert-unrevoke-form.html.ep
+share/minica/templates/cert-unrevoke.html.ep
+share/minica/templates/crl-create.html.ep
+share/minica/templates/crl-delete-form.html.ep
+share/minica/templates/crl-delete.html.ep
+share/minica/templates/crl-download-form.html.ep
+share/minica/templates/crl-list-form.html.ep
+share/minica/templates/crl-list.html.ep
+share/minica/templates/crl-show-form.html.ep
+share/minica/templates/crl-show.html.ep
+share/minica/templates/doc.html.ep
+share/minica/templates/exception.development.html.ep
+share/minica/templates/exception.production.html.ep
+share/minica/templates/layouts/default.html.ep
+share/minica/templates/layouts/login.html.ep
+share/minica/templates/login.html.ep
+share/minica/templates/not_found.development.html.ep
+share/minica/templates/not_found.production.html.ep
+share/minica/templates/start.html.ep
+share/minica/templates/user-chname-form.html.ep
+share/minica/templates/user-chname.html.ep
+share/minica/templates/user-chpwd-form.html.ep
+share/minica/templates/user-chpwd.html.ep
+share/minica/templates/user-create.html.ep
+share/minica/templates/user-delete-form.html.ep
+share/minica/templates/user-delete.html.ep
+share/minica/templates/user-list.html.ep
+@dirrm share/minica/lib/MiniCA/Controller
+@dirrm share/minica/lib/MiniCA/Model
+@dirrm share/minica/lib/MiniCA
+@dirrm share/minica/lib/Mojolicious/Plugin
+@dirrm share/minica/lib/Mojolicious
+@dirrm share/minica/lib
+@dirrm share/minica/public/css
+@dirrm share/minica/public/docs
+@dirrm share/minica/public/images
+@dirrm share/minica/public/jquery-ui
+@dirrm share/minica/public/js
+@dirrm share/minica/public
+@dirrm share/minica/templates/layouts
+@dirrm share/minica/templates
+@dirrm share/minica
