@@ -213,8 +213,6 @@ $("#cert-delete-reveal").draggable();
 </div> 
 
 
-
-
 <script>
 $("#issuer-select-form").on("submit", function(event) {
     $("#message-window").foundation();
