@@ -15,4 +15,4 @@ Currently, the application version is beta, (maybe) requires some refinemenl but
 
 You can see more http://minica.unix7.org
 
-(http://minica.unix7.org/_media/screenshot-2017-04-01-14-41-34.png?w=400&tok=d9d7fb)
+(http://minica.unix7.org/_media/screenshot-2017-04-01-14-41-34.png?w=400&tok=d9d7fb&.jpg)
